@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,10 +12,11 @@ import {
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { config } from '@/config'; // Import the configuration
 
 const NavLink = ({ href, children, isActive }) => (
-  <NavigationMenuLink 
-    href={href} 
+  <NavigationMenuLink
+    href={href}
     className={cn(
       "font-semibold text-sm px-3 py-2 hover:text-gray-900 relative after:content-[''] after:absolute after:left-0 after:bottom-[-18px] after:h-[2px] after:w-full after:bg-red-500 after:scale-x-0 after:transition-transform after:duration-300",
       isActive ? "text-gray-900 after:scale-x-100" : "text-gray-600",
@@ -29,11 +30,34 @@ const NavLink = ({ href, children, isActive }) => (
 
 const Header = () => {
   const [activeLink, setActiveLink] = useState('Categories');
-  const categories = [
-    '3D Solution', 'Accessories', 'Battery', 'Basic Components',
-    'Display', 'Microcontroller', 'Project Kits', 'Robotics',
-    'Sensor', 'Starter Kits', 'Wireless'
-  ];
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${config.baseURL}/categories`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        if (result.success && Array.isArray(result.data)) {
+          setCategories(result.data);
+        } else {
+          throw new Error('API response format is incorrect.');
+        }
+      } catch (e) {
+        console.error("Failed to fetch categories:", e);
+        setError(e.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -65,7 +89,7 @@ const Header = () => {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger 
+                  <NavigationMenuTrigger
                      className={cn(
                       "font-semibold text-sm relative after:content-[''] after:absolute after:left-0 after:bottom-[-18px] after:h-[2px] after:w-full after:bg-red-500 after:scale-x-0 after:transition-transform after:duration-300",
                        activeLink === 'Categories' ? "text-gray-900 after:scale-x-100" : "text-gray-600",
@@ -75,11 +99,17 @@ const Header = () => {
                   >CATEGORIES</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                      {categories.map((category) => (
-                        <ListItem key={category} href="#" title={category}>
-                          Find the best {category.toLowerCase()} here.
-                        </ListItem>
-                      ))}
+                       {isLoading ? (
+                        <p className="col-span-full text-center p-4">Loading categories...</p>
+                      ) : error ? (
+                        <p className="col-span-full text-center p-4 text-red-500">Could not load categories.</p>
+                      ) : (
+                        categories.map((category) => (
+                            <ListItem key={category.id} href={`/category/${category.slug}`} title={category.name}>
+                              {category.description}
+                            </ListItem>
+                        ))
+                      )}
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -98,7 +128,7 @@ const Header = () => {
               </NavigationMenuList>
             </NavigationMenu>
           </nav>
-          
+
           <div className="flex items-center gap-4">
             <div className="relative w-40 sm:w-64 hidden md:block">
               <Input type="search" placeholder="Query here..." className="pr-10 text-sm rounded-full bg-gray-100 border-gray-200 focus:bg-white" />
@@ -172,4 +202,3 @@ const ListItem = React.forwardRef(({ className, title, children, ...props }, ref
 ListItem.displayName = "ListItem";
 
 export default Header;
-
