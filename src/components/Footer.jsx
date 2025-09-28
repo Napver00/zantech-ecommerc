@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, MapPin, Phone, Link as LinkIcon, Facebook, Instagram, Linkedin } from 'lucide-react';
+
+const YouTubeIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor" />
+    <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="white" />
+  </svg>
+);
+
 import { config } from '@/config';
 
 const iconForPlatform = (platform) => {
@@ -8,6 +16,7 @@ const iconForPlatform = (platform) => {
   if (p.includes('facebook')) return Facebook;
   if (p.includes('instagram')) return Instagram;
   if (p.includes('linkedin')) return Linkedin;
+  if (p.includes('youtube')) return YouTubeIcon;
   // fallback for youtube, tiktok etc. use LinkIcon
   return LinkIcon;
 }
@@ -55,6 +64,8 @@ const Footer = () => {
             <div className="flex space-x-4 mt-4">
               {socialLinks.length > 0 ? (
                 socialLinks.map(link => {
+                  const p = link.platform?.toLowerCase?.() || '';
+                  if (p.includes('tiktok')) return null; // explicitly skip TikTok
                   const Icon = iconForPlatform(link.platform);
                   return (
                     <a key={link.id} href={link.url} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-blue-600">

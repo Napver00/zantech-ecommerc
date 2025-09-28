@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon } from 'lucide-react';
+
+const YouTubeIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor" />
+    <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="white" />
+  </svg>
+);
+
+// TikTok icon removed by request — do not render TikTok links
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -12,7 +21,7 @@ import {
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
-import { config } from '@/config'; // Import the configuration
+import { config } from '@/config';
 import { Link, useLocation } from 'react-router-dom';
 
 
@@ -83,6 +92,9 @@ const Header = () => {
                 if (platform.includes('facebook')) Icon = Facebook;
                 if (platform.includes('instagram')) Icon = Instagram;
                 if (platform.includes('linkedin')) Icon = Linkedin;
+                if (platform.includes('youtube')) Icon = YouTubeIcon;
+                // skip tiktok entries entirely
+                if (platform.includes('tiktok')) return null;
                 return (
                   <a key={link.id} href={link.url} target="_blank" rel="noreferrer" className="opacity-80 hover:opacity-100">
                     <Icon size={16} />
