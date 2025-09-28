@@ -5,6 +5,7 @@ import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import ReturnPolicy from '@/pages/ReturnPolicy';
 import Contact from '@/pages/Contact';
+import ProductPage from '@/pages/ProductPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
   <Route path="/privacy-policy" element={<Privacy />} />
   <Route path="/return-policy" element={<ReturnPolicy />} />
   <Route path="/contact" element={<Contact />} />
+        <Route path="/product/:slug" element={<ProductPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
