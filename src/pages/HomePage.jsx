@@ -4,6 +4,9 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import CategorySidebar from "@/components/CategorySidebar";
 import CompletePackage from "@/components/CompletePackage";
+import CompetitionPackage from "@/components/CompetitionPackage";
+import BestSelling from "@/components/BestSelling";
+import RecentlyAdded from "@/components/RecentlyAdded";
 
 const HomePage = () => {
   return (
@@ -17,6 +20,9 @@ const HomePage = () => {
           <div className="col-span-1 lg:col-span-3">
             <HeroSection />
             <CompletePackage />
+            <CompetitionPackage />
+            <BestSelling />
+            <RecentlyAdded />
           </div>
         </div>
       </main>
