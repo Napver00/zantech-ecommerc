@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { config } from '@/config';
@@ -55,21 +54,39 @@ const HeroSection = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
+  const goToSlide = (index) => {
+    setCurrentIndex(index);
+  };
+
   if (isLoading) {
-    return <Skeleton className="w-full h-64 md:h-80 lg:h-96 rounded-lg" />;
+    return (
+      <div>
+        <Skeleton className="w-full h-80 md:h-96 lg:h-[28rem] rounded-2xl" />
+        <div className="mt-10 px-6 md:px-12 lg:px-24">
+          <Skeleton className="h-16 w-3/4" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-lg overflow-hidden group bg-red-100 flex items-center justify-center">
-        <p className="text-red-600">Failed to load images. Please try again later.</p>
+      <div>
+        <div className="relative w-full h-80 md:h-96 lg:h-[28rem] rounded-2xl overflow-hidden bg-gray-100 flex items-center justify-center">
+          <p className="text-gray-600">Failed to load images. Please try again later.</p>
+        </div>
+        <div className="mt-10 px-6 md:px-12 lg:px-24">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">
+            Awaken your hidden <span className="text-slate-500">Talent</span>
+          </h2>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="relative w-full h-80 md:h-96 lg:h-[28rem] flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-80 md:h-96 lg:h-[28rem] flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl shadow-lg">
         {/* Image area: centered and contained */}
         <div className="w-full max-w-4xl flex items-center justify-center px-8">
           {images.map((image, index) => (
@@ -77,35 +94,64 @@ const HeroSection = () => {
               key={image.id}
               src={image.path}
               alt={`Hero image ${index + 1}`}
-              className={`w-full max-w-3xl h-56 md:h-72 lg:h-96 object-contain transition-opacity duration-700 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0 absolute'}`}
+              className={`w-full max-w-3xl h-56 md:h-72 lg:h-96 object-contain transition-all duration-700 ease-in-out ${
+                index === currentIndex ? 'opacity-100' : 'opacity-0 absolute'
+              }`}
             />
           ))}
         </div>
 
-        {/* Left / Right circular arrows - visible */}
-        <button
-          aria-label="previous"
-          onClick={goToPrevious}
-          className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center"
-        >
-          <ChevronLeft />
-        </button>
-        <button
-          aria-label="next"
-          onClick={goToNext}
-          className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center"
-        >
-          <ChevronRight />
-        </button>
+        {/* Navigation Arrows */}
+        {images.length > 1 && (
+          <>
+            <button
+              aria-label="Previous image"
+              onClick={goToPrevious}
+              className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
+            </button>
+            
+            <button
+              aria-label="Next image"
+              onClick={goToNext}
+              className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+            >
+              <ChevronRight className="h-5 w-5 text-gray-600 group-hover:text-blue-600" />
+            </button>
+          </>
+        )}
+
+        {/* Dot Indicators */}
+        {images.length > 1 && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-blue-600 scale-110'
+                    : 'bg-white/70 hover:bg-white'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Large heading below the hero, matching screenshot */}
-      <div className="mt-10 px-6 md:px-12 lg:px-24">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">Awaken your hidden <span className="text-slate-500">Talent</span></h2>
+      {/* Large heading below the hero */}
+      <div className="mt-12 px-6 md:px-12 lg:px-24">
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900">
+          Awaken your hidden{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            Talent
+          </span>
+        </h2>
       </div>
     </div>
   );
 };
 
 export default HeroSection;
-
