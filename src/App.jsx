@@ -4,6 +4,7 @@ import About from '@/pages/About';
 import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import ReturnPolicy from '@/pages/ReturnPolicy';
+import Contact from '@/pages/Contact';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
   <Route path="/terms" element={<Terms />} />
   <Route path="/privacy-policy" element={<Privacy />} />
   <Route path="/return-policy" element={<ReturnPolicy />} />
+  <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>

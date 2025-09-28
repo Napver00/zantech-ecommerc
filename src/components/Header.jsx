@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -22,6 +22,7 @@ const Header = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [company, setCompany] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -48,6 +49,22 @@ const Header = () => {
     fetchCategories();
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
+  useEffect(() => {
+    let mounted = true;
+    const fetchCompany = async () => {
+      try {
+        const res = await fetch(`${config.baseURL}/company`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (json.success && json.data && mounted) setCompany(json.data);
+      } catch (err) {
+        console.error('Failed to load company info in header:', err);
+      }
+    };
+    fetchCompany();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       {/* Top Bar */}
@@ -59,9 +76,26 @@ const Header = () => {
             <Link to="/return-policy" className="hover:underline opacity-80 hover:opacity-100">REFUND &amp; RETURNS POLICY</Link>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="#" className="opacity-80 hover:opacity-100"><Facebook size={16}/></a>
-            <a href="#" className="opacity-80 hover:opacity-100"><Instagram size={16}/></a>
-            <a href="#" className="opacity-80 hover:opacity-100"><Linkedin size={16}/></a>
+            {company?.social_links?.length > 0 ? (
+              company.social_links.map(link => {
+                const platform = link.platform?.toLowerCase?.() || '';
+                let Icon = LinkIcon;
+                if (platform.includes('facebook')) Icon = Facebook;
+                if (platform.includes('instagram')) Icon = Instagram;
+                if (platform.includes('linkedin')) Icon = Linkedin;
+                return (
+                  <a key={link.id} href={link.url} target="_blank" rel="noreferrer" className="opacity-80 hover:opacity-100">
+                    <Icon size={16} />
+                  </a>
+                );
+              })
+            ) : (
+              <>
+                <a href="#" className="opacity-80 hover:opacity-100"><Facebook size={16}/></a>
+                <a href="#" className="opacity-80 hover:opacity-100"><Instagram size={16}/></a>
+                <a href="#" className="opacity-80 hover:opacity-100"><Linkedin size={16}/></a>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -159,7 +193,7 @@ const Header = () => {
             <Link to="/terms" className="font-semibold">TERMS &amp; CONDITIONS</Link>
             <Link to="/privacy-policy" className="font-semibold">PRIVACY POLICY</Link>
             <Link to="/return-policy" className="font-semibold">REFUND &amp; RETURNS POLICY</Link>
-            <Link to="/" className="font-semibold">CONTACT</Link>
+            <Link to="/contact" className="font-semibold">CONTACT</Link>
                       <div className="relative w-full mt-4">
                           <Input type="search" placeholder="Query here..." className="pr-10" />
                           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
