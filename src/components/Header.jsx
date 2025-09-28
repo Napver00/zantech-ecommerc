@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart } from 'lucide-react';
-
-const YouTubeIcon = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-    <rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor" />
-    <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="white" />
-  </svg>
-);
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -21,16 +13,27 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { config } from '@/config';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+const YouTubeIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor" />
+    <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="white" />
+  </svg>
+);
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState('Categories');
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [company, setCompany] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -73,11 +76,78 @@ const Header = () => {
     return () => { mounted = false; };
   }, []);
 
+  // Debounced search function
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim() && searchQuery.length > 2) {
+        performSearch(searchQuery, true); // true for preview mode
+      } else {
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const performSearch = async (query, isPreview = false) => {
+    if (!query.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const limit = isPreview ? 5 : 20; // Show fewer results in preview
+      const response = await fetch(
+        `${config.baseURL}/products?search=${encodeURIComponent(query)}&limit=${limit}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && Array.isArray(result.data)) {
+        setSearchResults(result.data);
+        if (isPreview) {
+          setShowSearchResults(true);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    } catch (err) {
+      console.error('Search failed:', err);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Handle search functionality here
-      console.log('Searching for:', searchQuery);
+      // Navigate to search results page
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+    if (!e.target.value.trim()) {
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchResultClick = (productSlug) => {
+    navigate(`/product/${productSlug}`);
+    setShowSearchResults(false);
+    setSearchQuery('');
+  };
+
+  const handleViewAllResults = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowSearchResults(false);
     }
   };
 
@@ -227,23 +297,132 @@ const Header = () => {
           </nav>
 
           {/* Search & Actions */}
-          <div className="flex items-center gap-3">
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="relative w-48 sm:w-64 hidden md:block">
-              <Input 
-                type="search" 
-                placeholder="Search products..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-12 text-sm rounded-full bg-gray-50 border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" 
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-blue-100 transition-colors duration-200"
-              >
-                <Search className="h-4 w-4 text-gray-500 hover:text-blue-600" />
-              </button>
-            </form>
+          <div className="flex items-center gap-4">
+            {/* Search Bar with Dropdown - Made Much Wider */}
+            <div className="relative w-72 sm:w-96 hidden md:block">
+              <form onSubmit={handleSearch} className="relative">
+                <Input 
+                  type="search" 
+                  placeholder="Search for products, categories, or brands..." 
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                  onFocus={() => searchQuery.length > 2 && setShowSearchResults(true)}
+                  onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
+                  className="pr-14 pl-5 py-3 text-base rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm" 
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                >
+                  {isSearching ? (
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Search className="h-5 w-5 text-gray-500 hover:text-blue-600" />
+                  )}
+                </button>
+              </form>
+              
+              {/* Enhanced Search Results Dropdown - Much Bigger */}
+              {showSearchResults && (searchResults.length > 0 || isSearching) && (
+                <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 max-h-[32rem] overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-8 text-center">
+                      <div className="animate-spin rounded-full h-10 w-10 border-3 border-blue-600 border-t-transparent mx-auto mb-4"></div>
+                      <p className="text-gray-500 text-base font-medium">Searching for products...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="p-4 border-b border-gray-100">
+                        <h3 className="font-semibold text-gray-900 text-base">Search Results</h3>
+                        <p className="text-sm text-gray-600 mt-1">Found {searchResults.length} products</p>
+                      </div>
+                      
+                      <div className="p-2">
+                        {searchResults.map((product) => (
+                          <div
+                            key={product.id}
+                            onClick={() => handleSearchResultClick(product.slug)}
+                            className="flex items-center gap-4 p-4 hover:bg-blue-50 cursor-pointer rounded-xl border border-transparent hover:border-blue-100 transition-all duration-200 group"
+                          >
+                            <div className="relative">
+                              <img
+                                src={product.image_paths || '/placeholder-product.jpg'}
+                                alt={product.name}
+                                className="w-20 h-20 object-cover rounded-xl bg-gray-100 group-hover:scale-105 transition-transform duration-200"
+                              />
+                              {product.discountPercentage && (
+                                <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                  -{product.discountPercentage}%
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-gray-900 text-base leading-tight mb-2 group-hover:text-blue-700 transition-colors">
+                                {product.name}
+                              </h4>
+                              
+                              <div className="flex items-center gap-3 mb-2">
+                                <span className="font-bold text-blue-600 text-lg">
+                                  ৳{(product.discountedPrice || product.price).toLocaleString()}
+                                </span>
+                                {product.discountedPrice && (
+                                  <span className="text-sm text-gray-500 line-through">
+                                    ৳{product.price.toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {product.short_description && (
+                                <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                                  {product.short_description}
+                                </p>
+                              )}
+                              
+                              <div className="flex items-center gap-3 mt-2">
+                                {product.categories && product.categories.length > 0 && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {product.categories[0].name}
+                                  </span>
+                                )}
+                                
+                                {product.quantity > 0 ? (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    In Stock
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Out of Stock
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
+                              <Search className="h-5 w-5" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {searchResults.length === 5 && (
+                        <div className="border-t border-gray-100">
+                          <div 
+                            onClick={handleViewAllResults}
+                            className="p-4 text-center bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 cursor-pointer text-blue-700 font-semibold text-base rounded-b-2xl transition-all duration-200 group"
+                          >
+                            <div className="flex items-center justify-center gap-2">
+                              <span>View all results for "{searchQuery}"</span>
+                              <Search className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-2">
@@ -287,11 +466,15 @@ const Header = () => {
                         type="search" 
                         placeholder="Search products..." 
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={handleSearchInputChange}
                         className="pr-10 rounded-lg border-gray-200" 
                       />
                       <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Search className="h-4 w-4 text-gray-400" />
+                        {isSearching ? (
+                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <Search className="h-4 w-4 text-gray-400" />
+                        )}
                       </button>
                     </form>
 

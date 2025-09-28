@@ -6,12 +6,14 @@ import Privacy from '@/pages/Privacy';
 import ReturnPolicy from '@/pages/ReturnPolicy';
 import Contact from '@/pages/Contact';
 import ProductPage from '@/pages/ProductPage';
+import Shop from '@/pages/Shop';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/shop" element={<Shop />} />
   <Route path="/about" element={<About />} />
   <Route path="/terms" element={<Terms />} />
   <Route path="/privacy-policy" element={<Privacy />} />
