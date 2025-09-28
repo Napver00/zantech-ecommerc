@@ -14,6 +14,8 @@ import {
   ArrowLeft,
   Minus,
   Plus,
+  Package,
+  ExternalLink,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { config } from "@/config";
@@ -203,6 +205,100 @@ const QuantitySelector = ({ max = 1, value = 1, onChange }) => {
   );
 };
 
+const BundleItems = ({ bundleItems }) => {
+  if (!bundleItems || bundleItems.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl p-8 border border-gray-200">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-2 rounded-lg">
+          <Package className="h-6 w-6 text-white" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Bundle Includes</h2>
+          <p className="text-gray-600">Click on any item to view its details</p>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {bundleItems.map((item) => (
+          <a
+            key={item.item_id}
+            href={`/product/${item.slug}`}
+            className="group relative bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300 hover:-translate-y-1"
+          >
+            {/* Quantity Badge */}
+            {item.bundle_quantity > 1 && (
+              <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center z-10">
+                {item.bundle_quantity}
+              </div>
+            )}
+            
+            {/* Item Image */}
+            <div className="aspect-square bg-white rounded-lg overflow-hidden mb-3 flex items-center justify-center p-2">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            
+            {/* Item Details */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {item.name}
+              </h3>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {item.discountedPrice ? (
+                    <>
+                      <span className="text-sm font-bold text-gray-900">
+                        ৳{item.discountedPrice}
+                      </span>
+                      <span className="text-xs text-gray-500 line-through">
+                        ৳{item.price}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-sm font-bold text-gray-900">
+                      ৳{item.price}
+                    </span>
+                  )}
+                </div>
+                
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+              </div>
+              
+              {item.discountPercentage && (
+                <div className="flex items-center">
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">
+                    -{item.discountPercentage}% OFF
+                  </span>
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+      
+      {/* Bundle Summary */}
+      <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+        <div className="flex items-center gap-2 mb-2">
+          <Package className="h-5 w-5 text-emerald-600" />
+          <span className="font-semibold text-emerald-900">Bundle Benefits:</span>
+        </div>
+        <ul className="text-sm text-emerald-800 space-y-1">
+          <li>• All components work together seamlessly</li>
+          <li>• Carefully selected for optimal compatibility</li>
+          <li>• Great value compared to buying items separately</li>
+          <li>• Perfect for getting started with your project</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 const ProductPage = () => {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
@@ -309,6 +405,19 @@ const ProductPage = () => {
                   {product.name}
                 </span>
               </nav>
+
+              {/* Bundle Badge */}
+              {product.is_bundle === 1 && (
+                <div className="flex items-center gap-2">
+                  <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-semibold">
+                    <Package className="h-4 w-4" />
+                    Complete Bundle Kit
+                  </div>
+                  <span className="text-gray-600 text-sm">
+                    {product.bundle_items?.length || 0} items included
+                  </span>
+                </div>
+              )}
 
               {/* Main Product Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -438,32 +547,13 @@ const ProductPage = () => {
                       />
                     </button>
                   </div>
-
-                  {/* Features */}
-                  {/* <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200">
-                      <Truck className="w-5 h-5 text-green-600" />
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          Free Delivery
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          On orders over ৳500
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <p className="font-medium text-gray-900">Warranty</p>
-                        <p className="text-sm text-gray-500">
-                          1 year guarantee
-                        </p>
-                      </div>
-                    </div>
-                  </div> */}
                 </div>
               </div>
+
+              {/* Bundle Items Section - Only show for bundle products */}
+              {product.is_bundle === 1 && product.bundle_items && (
+                <BundleItems bundleItems={product.bundle_items} />
+              )}
 
               {/* Share Section */}
               <div className="bg-white rounded-2xl p-6 border border-gray-200">
