@@ -13,22 +13,11 @@ import {
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { config } from '@/config'; // Import the configuration
-
-const NavLink = ({ href, children, isActive }) => (
-  <NavigationMenuLink
-    href={href}
-    className={cn(
-      "font-semibold text-sm px-3 py-2 hover:text-gray-900 relative after:content-[''] after:absolute after:left-0 after:bottom-[-18px] after:h-[2px] after:w-full after:bg-red-500 after:scale-x-0 after:transition-transform after:duration-300",
-      isActive ? "text-gray-900 after:scale-x-100" : "text-gray-600",
-      "hover:after:scale-x-100"
-      )}
-    >
-    {children}
-  </NavigationMenuLink>
-);
+import { Link, useLocation } from 'react-router-dom';
 
 
 const Header = () => {
+  const location = useLocation();
   const [activeLink, setActiveLink] = useState('Categories');
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,9 +54,9 @@ const Header = () => {
       <div className="bg-blue-950 text-white text-xs py-4">
         <div className="container mx-auto flex justify-between items-center px-4">
           <div>
-            <a href="#" className="hover:underline mr-4 opacity-80 hover:opacity-100">TERMS & CONDITIONS</a>
-            <a href="#" className="hover:underline mr-4 opacity-80 hover:opacity-100">PRIVACY POLICY</a>
-            <a href="#" className="hover:underline opacity-80 hover:opacity-100">REFUND & RETURNS POLICY</a>
+            <Link to="/terms" className="hover:underline mr-4 opacity-80 hover:opacity-100">TERMS &amp; CONDITIONS</Link>
+            <Link to="/privacy-policy" className="hover:underline mr-4 opacity-80 hover:opacity-100">PRIVACY POLICY</Link>
+            <Link to="/return-policy" className="hover:underline opacity-80 hover:opacity-100">REFUND &amp; RETURNS POLICY</Link>
           </div>
           <div className="flex items-center space-x-4">
             <a href="#" className="opacity-80 hover:opacity-100"><Facebook size={16}/></a>
@@ -80,9 +69,9 @@ const Header = () => {
       {/* Main Header */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <a href="#">
+          <Link to="/">
             <img src="/zantech-logo.webp" alt="ZANTech Logo" className="h-12" />
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-4">
@@ -114,16 +103,24 @@ const Header = () => {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
                 <NavigationMenuItem onClick={() => setActiveLink('Shop')}>
-                   <NavLink href="#" isActive={activeLink === 'Shop'}>SHOP</NavLink>
+                  <NavigationMenuLink asChild>
+                    <Link to="/shop" className={cn('font-semibold text-sm px-3 py-2', location.pathname === '/shop' ? 'text-gray-900' : 'text-gray-600')}>SHOP</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
-                 <NavigationMenuItem onClick={() => setActiveLink('Project')}>
-                   <NavLink href="#" isActive={activeLink === 'Project'}>PROJECT</NavLink>
+                <NavigationMenuItem onClick={() => setActiveLink('Project')}>
+                  <NavigationMenuLink asChild>
+                    <Link to="/project" className={cn('font-semibold text-sm px-3 py-2', location.pathname === '/project' ? 'text-gray-900' : 'text-gray-600')}>PROJECT</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
-                 <NavigationMenuItem onClick={() => setActiveLink('About')}>
-                   <NavLink href="#" isActive={activeLink === 'About'}>ABOUT</NavLink>
+                <NavigationMenuItem onClick={() => setActiveLink('About')}>
+                  <NavigationMenuLink asChild>
+                    <Link to="/about" className={cn('font-semibold text-sm px-3 py-2', location.pathname === '/about' ? 'text-gray-900 after:scale-x-100' : 'text-gray-600')}>ABOUT</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
-                 <NavigationMenuItem onClick={() => setActiveLink('Contact')}>
-                   <NavLink href="#" isActive={activeLink === 'Contact'}>CONTACT</NavLink>
+                <NavigationMenuItem onClick={() => setActiveLink('Contact')}>
+                  <NavigationMenuLink asChild>
+                    <Link to="/contact" className={cn('font-semibold text-sm px-3 py-2', location.pathname === '/contact' ? 'text-gray-900' : 'text-gray-600')}>CONTACT</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
@@ -154,12 +151,15 @@ const Header = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
-                  <nav className="flex flex-col space-y-4 mt-8">
-                      <a href="#" className="font-semibold">CATEGORIES</a>
-                      <a href="#" className="font-semibold">SHOP</a>
-                      <a href="#" className="font-semibold">PROJECT</a>
-                      <a href="#" className="font-semibold">ABOUT</a>
-                      <a href="#" className="font-semibold">CONTACT</a>
+          <nav className="flex flex-col space-y-4 mt-8">
+            <Link to="/" className="font-semibold">CATEGORIES</Link>
+            <Link to="/" className="font-semibold">SHOP</Link>
+            <Link to="/" className="font-semibold">PROJECT</Link>
+            <Link to="/about" className="font-semibold">ABOUT</Link>
+            <Link to="/terms" className="font-semibold">TERMS &amp; CONDITIONS</Link>
+            <Link to="/privacy-policy" className="font-semibold">PRIVACY POLICY</Link>
+            <Link to="/return-policy" className="font-semibold">REFUND &amp; RETURNS POLICY</Link>
+            <Link to="/" className="font-semibold">CONTACT</Link>
                       <div className="relative w-full mt-4">
                           <Input type="search" placeholder="Query here..." className="pr-10" />
                           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
