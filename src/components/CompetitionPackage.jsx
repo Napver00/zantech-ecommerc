@@ -152,46 +152,6 @@ const CompetitionPackage = () => {
         )}
       </div>
 
-      {/* Competition Info Cards */}
-      {!loading && !error && products.length > 0 && (
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-100">
-            <div className="flex items-center mb-4">
-              <div className="bg-orange-500 p-2 rounded-lg mr-3">
-                <Target className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Precision Engineering</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Built with tournament-grade components for maximum accuracy and reliability.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border border-red-100">
-            <div className="flex items-center mb-4">
-              <div className="bg-red-500 p-2 rounded-lg mr-3">
-                <Zap className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">High Performance</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Optimized for speed and agility to give your team the competitive edge.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border border-yellow-100">
-            <div className="flex items-center mb-4">
-              <div className="bg-yellow-500 p-2 rounded-lg mr-3">
-                <Cpu className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Advanced Control</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Sophisticated programming capabilities for complex autonomous routines.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Bottom CTA */}
       {!loading && !error && products.length > 0 && (
