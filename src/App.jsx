@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'sonner';
 
 function App() {
   return (
@@ -36,6 +37,22 @@ function App() {
             />
             <Route path="*" element={<HomePage />} />
           </Routes>
+
+          {/* Toast Notifications */}
+          <Toaster 
+            position="top-right"
+            expand={true}
+            richColors
+            closeButton
+            duration={4000}
+            toastOptions={{
+              style: {
+                borderRadius: '12px',
+                padding: '16px',
+              },
+              className: 'toast-notification',
+            }}
+          />
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>
