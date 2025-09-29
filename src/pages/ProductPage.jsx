@@ -5,19 +5,16 @@ import {
   Facebook,
   MessageSquare,
   Linkedin,
-  Link,
+  Link as LinkIcon,
   Star,
   ChevronLeft,
   ChevronRight,
-  Truck,
-  Shield,
-  ArrowLeft,
-  Minus,
-  Plus,
   Package,
   ExternalLink,
+  Minus,
+  Plus,
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import { config } from "@/config";
 import DOMPurify from "dompurify";
 import Header from "@/components/Header";
@@ -228,14 +225,12 @@ const BundleItems = ({ bundleItems }) => {
             href={`/product/${item.slug}`}
             className="group relative bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300 hover:-translate-y-1"
           >
-            {/* Quantity Badge */}
             {item.bundle_quantity > 1 && (
               <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center z-10">
                 {item.bundle_quantity}
               </div>
             )}
             
-            {/* Item Image */}
             <div className="aspect-square bg-white rounded-lg overflow-hidden mb-3 flex items-center justify-center p-2">
               <img
                 src={item.image}
@@ -244,7 +239,6 @@ const BundleItems = ({ bundleItems }) => {
               />
             </div>
             
-            {/* Item Details */}
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
                 {item.name}
@@ -283,7 +277,6 @@ const BundleItems = ({ bundleItems }) => {
         ))}
       </div>
       
-      {/* Bundle Summary */}
       <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
         <div className="flex items-center gap-2 mb-2">
           <Package className="h-5 w-5 text-emerald-600" />
@@ -403,7 +396,6 @@ const ProductPage = () => {
         ) : product ? (
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto space-y-8">
-              {/* Breadcrumb */}
               <nav className="flex items-center gap-2 text-sm text-gray-600">
                 <span>Electronics</span>
                 <span>/</span>
@@ -414,7 +406,6 @@ const ProductPage = () => {
                 </span>
               </nav>
 
-              {/* Bundle Badge */}
               {product.is_bundle === 1 && (
                 <div className="flex items-center gap-2">
                   <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-semibold">
@@ -427,9 +418,7 @@ const ProductPage = () => {
                 </div>
               )}
 
-              {/* Main Product Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Image Gallery */}
                 <div>
                   <Gallery
                     images={
@@ -445,9 +434,7 @@ const ProductPage = () => {
                   />
                 </div>
 
-                {/* Product Details */}
                 <div className="space-y-6">
-                  {/* Category Badge */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
                       {product.categories?.[0]?.name || "Category"}
@@ -463,22 +450,23 @@ const ProductPage = () => {
                     )}
                   </div>
 
-                  {/* Product Title */}
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-4">
                       {product.name}
                     </h1>
-
-                    {/* Rating */}
-                    {product.average_rating && (
+                    {product.average_rating ? (
                       <StarRating
                         rating={product.average_rating}
                         totalReviews={product.ratings?.length || 0}
                       />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Star className="w-5 h-5" />
+                        <span>No ratings yet.</span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Price */}
                   <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <div className="flex items-baseline gap-4 mb-2">
                       <span className="text-3xl font-bold text-gray-900">
@@ -504,7 +492,6 @@ const ProductPage = () => {
                       )}
                   </div>
 
-                  {/* Description */}
                   <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
                       About this product
@@ -514,7 +501,6 @@ const ProductPage = () => {
                     </p>
                   </div>
 
-                  {/* Quantity Selector */}
                   <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Quantity
@@ -531,7 +517,6 @@ const ProductPage = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex gap-4">
                     <button
                       onClick={handleAddToCart}
@@ -559,12 +544,10 @@ const ProductPage = () => {
                 </div>
               </div>
 
-              {/* Bundle Items Section - Only show for bundle products */}
               {product.is_bundle === 1 && product.bundle_items && (
                 <BundleItems bundleItems={product.bundle_items} />
               )}
 
-              {/* Share Section */}
               <div className="bg-white rounded-2xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Share this product
@@ -580,12 +563,11 @@ const ProductPage = () => {
                     <Linkedin className="w-5 h-5" />
                   </button>
                   <button className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors">
-                    <Link className="w-5 h-5" />
+                    <LinkIcon className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
-              {/* Product Description */}
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Product Description
@@ -598,7 +580,6 @@ const ProductPage = () => {
                 />
               </div>
 
-              {/* Tags Section */}
               {product.tags && product.tags.length > 0 && (
                 <div className="bg-white rounded-2xl p-6 border border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -618,11 +599,11 @@ const ProductPage = () => {
               )}
 
               {/* Reviews Section */}
-              {product.ratings && product.ratings.length > 0 && (
-                <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                    Customer Reviews
-                  </h2>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Customer Reviews
+                </h2>
+                {product.ratings && product.ratings.length > 0 ? (
                   <div className="space-y-6">
                     {product.ratings.map((review) => (
                       <div
@@ -657,8 +638,14 @@ const ProductPage = () => {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="text-center py-8">
+                      <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900">No Reviews Yet</h3>
+                      <p className="text-gray-600 mt-1">Be the first to share your thoughts on this product!</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ) : null}
