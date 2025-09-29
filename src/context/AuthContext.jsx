@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchWishlist = async (authToken) => {
     try {
-        const response = await fetch(`${config.baseURL}/wishlist?limit=1000`, {
+        const response = await fetch(`${config.baseURL}/wishlist`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         const data = await response.json();
