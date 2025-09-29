@@ -1,8 +1,9 @@
 import React from 'react';
-import { useCart } from '@/context/CartContext';
+import { useCart } from '../context/CartContext';
 import { Button } from '@/components/ui/button';
 import { SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { ShoppingCart, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Package } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CartItem = ({ item }) => {
     const { updateQuantity, removeFromCart } = useCart();
@@ -153,15 +154,16 @@ export const Cart = () => {
 
                             {/* Action Buttons */}
                             <div className="space-y-2">
-                                <Button 
-                                    onClick={() => alert('Proceeding to checkout!')} 
-                                    className="w-full h-11 text-sm font-semibold bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all"
-                                    size="lg"
-                                >
-                                    <Package className="h-4 w-4 mr-2" />
-                                    Proceed to Checkout
-                                    <ArrowRight className="h-4 w-4 ml-2" />
-                                </Button>
+                                <Link to="/checkout" className="w-full block">
+                                    <Button 
+                                        className="w-full h-11 text-sm font-semibold bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all"
+                                        size="lg"
+                                    >
+                                        <Package className="h-4 w-4 mr-2" />
+                                        Proceed to Checkout
+                                        <ArrowRight className="h-4 w-4 ml-2" />
+                                    </Button>
+                                </Link>
                                 <Button 
                                     onClick={clearCart} 
                                     variant="outline" 
@@ -205,3 +207,4 @@ export const Cart = () => {
         </SheetContent>
     );
 };
+

@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import ProductPage from './pages/ProductPage';
 import Shop from './pages/Shop';
 import Dashboard from './pages/Dashboard';
+import Checkout from './pages/Checkout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/return-policy" element={<ReturnPolicy />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/product/:slug" element={<ProductPage />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route 
               path="/dashboard"
               element={
@@ -37,26 +39,25 @@ function App() {
             />
             <Route path="*" element={<HomePage />} />
           </Routes>
-
-          {/* Toast Notifications */}
-          <Toaster 
-            position="top-right"
-            expand={true}
-            richColors
-            closeButton
-            duration={4000}
-            toastOptions={{
-              style: {
-                borderRadius: '12px',
-                padding: '16px',
-              },
-              className: 'toast-notification',
-            }}
-          />
         </BrowserRouter>
+        <Toaster 
+          position="top-right"
+          expand={true}
+          richColors
+          closeButton
+          duration={4000}
+          toastOptions={{
+            style: {
+              borderRadius: '12px',
+              padding: '16px',
+            },
+            className: 'toast-notification',
+          }}
+        />
       </CartProvider>
     </AuthProvider>
   );
 }
 
 export default App;
+

@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [wishlist, setWishlist] = useState([]);
+  const [isAuthSheetOpen, setIsAuthSheetOpen] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
-      // Fetch the user's wishlist if needed
+      // You might want to fetch the user's wishlist here as well
     }
   }, []);
 
@@ -54,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       setToken(data.data.token);
       localStorage.setItem("token", data.data.token);
       localStorage.setItem("user", JSON.stringify(loggedInUser));
+      setIsAuthSheetOpen(false); 
 
       toast.success("Welcome back!", {
         description: `Logged in as ${loggedInUser.name}`,
@@ -140,6 +142,7 @@ export const AuthProvider = ({ children }) => {
         description: "Please login first to add items to your wishlist",
         duration: 4000,
       });
+      setIsAuthSheetOpen(true);
       return { success: false, message: "User not logged in." };
     }
 
@@ -201,6 +204,8 @@ export const AuthProvider = ({ children }) => {
     resendVerificationEmail,
     addToWishlist,
     wishlist,
+    isAuthSheetOpen,
+    setIsAuthSheetOpen,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
