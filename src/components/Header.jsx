@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
   NavigationMenuLink,
-} from '@/components/ui/navigation-menu';
+} from './ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { config } from '@/config';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { Cart } from './Cart';
 
 const YouTubeIcon = ({ size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -30,6 +34,7 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -386,12 +391,15 @@ const Header = () => {
               </Button>
 
               {/* Cart */}
-              <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 transition-colors duration-200 group">
-                <ShoppingCart className="text-gray-600 group-hover:text-blue-600 transition-colors duration-200" />
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm">
-                  0
-                </span>
-              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 transition-colors duration-200 group">
+                    <ShoppingCart className="text-gray-600 group-hover:text-blue-600 transition-colors duration-200" />
+                    {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm">{cartCount}</span>}
+                  </Button>
+                </SheetTrigger>
+                <Cart />
+              </Sheet>
 
               {/* Login Button */}
               <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg hidden sm:flex">

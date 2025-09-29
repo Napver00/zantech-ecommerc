@@ -23,6 +23,7 @@ import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCart } from "@/context/CartContext";
 
 const Gallery = ({ images = [], alt = "" }) => {
   const imgs = Array.isArray(images)
@@ -306,6 +307,13 @@ const ProductPage = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, quantity);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -526,6 +534,7 @@ const ProductPage = () => {
                   {/* Action Buttons */}
                   <div className="flex gap-4">
                     <button
+                      onClick={handleAddToCart}
                       disabled={product.quantity === 0}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors"
                     >

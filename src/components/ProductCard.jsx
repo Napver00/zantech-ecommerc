@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, Eye, Star, Zap } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 const ProductCard = ({ product }) => {
   const { name, price, image, discount, discountedPrice, discountPercentage, rating, reviews } = product;
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { addToCart } = useCart();
   
   const hasDiscount = Number(discount) > 0;
   const finalPrice = hasDiscount ? (discountedPrice ?? price) : price;
@@ -16,8 +18,11 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsLoading(true);
+    addToCart(product, 1);
     // Simulate API call
-    setTimeout(() => setIsLoading(false), 1000);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   const toggleWishlist = (e) => {
