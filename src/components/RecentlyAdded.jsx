@@ -6,12 +6,8 @@ import { Link } from "react-router-dom";
 import {
   Sparkles,
   AlertTriangle,
-  Plus,
   ArrowRight,
-  Clock,
-  Zap,
-  Star,
-  Gift,
+  TrendingUp,
 } from "lucide-react";
 
 const RecentlyAdded = ({ limit = 8 }) => {
@@ -65,16 +61,16 @@ const RecentlyAdded = ({ limit = 8 }) => {
   }, [limit]);
 
   const LoadingSkeleton = () => (
-    <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
-      <div className="p-6 bg-gradient-to-br from-emerald-50 to-teal-100 aspect-[5/4] flex items-center justify-center">
-        <Skeleton className="h-32 w-32 rounded-lg" />
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <div className="p-6 bg-gray-50 aspect-square flex items-center justify-center">
+        <Skeleton className="h-40 w-40 rounded-lg" />
       </div>
-      <div className="p-6">
+      <div className="p-5">
         <Skeleton className="h-5 w-3/4 mb-3" />
         <Skeleton className="h-4 w-1/2 mb-4" />
         <div className="flex justify-between items-center">
-          <Skeleton className="h-6 w-20" />
-          <Skeleton className="h-9 w-24 rounded-lg" />
+          <Skeleton className="h-7 w-24" />
+          <Skeleton className="h-10 w-28 rounded-lg" />
         </div>
       </div>
     </div>
@@ -82,17 +78,17 @@ const RecentlyAdded = ({ limit = 8 }) => {
 
   const ErrorState = () => (
     <div className="col-span-full">
-      <div className="bg-white rounded-xl shadow-sm border border-red-100 p-8 text-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
         <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <AlertTriangle className="h-8 w-8 text-red-600" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Unable to Load New Products
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          Unable to Load Products
         </h3>
-        <p className="text-gray-600 mb-6">{error}</p>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
         >
           Try Again
         </button>
@@ -102,155 +98,156 @@ const RecentlyAdded = ({ limit = 8 }) => {
 
   const EmptyState = () => (
     <div className="col-span-full">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-        <div className="bg-emerald-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Plus className="h-8 w-8 text-emerald-400" />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+        <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5">
+          <Sparkles className="h-10 w-10 text-blue-600" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No New Products Yet
+        <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+          No New Products Available
         </h3>
-        <p className="text-gray-600 mb-6">
-          New products will appear here as we add them to our collection!
+        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+          Check back soon for the latest additions to our collection.
         </p>
         <Link
           to="/shop"
-          className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200"
+          className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm"
         >
           Browse All Products
-          <ArrowRight className="ml-1 h-4 w-4" />
+          <ArrowRight className="ml-2 h-5 w-5" />
         </Link>
       </div>
     </div>
   );
 
   return (
-    <section className="mt-16 mb-6">
-      {/* Header Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-3 rounded-xl shadow-lg">
-              <Sparkles className="h-6 w-6 text-white" />
+    <section className="py-16 bg-gray-50">
+      <div className="container mx-auto px-4">
+        {/* Header Section */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-md">
+                <TrendingUp className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                  Recently Added
+                </h2>
+                <p className="text-gray-600 mt-1 text-sm md:text-base">
+                  Discover our latest products and newest arrivals
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900">
-                Recently Added
-              </h2>
-              <p className="text-gray-600 mt-1">
-                Fresh arrivals and latest additions to our collection
-              </p>
-            </div>
+
+            {!loading && !error && products.length > 0 && (
+              <Link
+                to="/shop"
+                className="hidden md:flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200 group"
+              >
+                View All
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+              </Link>
+            )}
           </div>
 
-          {/* View All Link */}
-          {!loading && !error && products.length > 0 && (
-            <Link
-              to="/shop"
-              className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200 group"
-            >
-              Show All Products
-              <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </Link>
+          {/* Divider */}
+          <div className="h-1 w-24 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {loading ? (
+            Array.from({ length: limit }).map((_, i) => (
+              <LoadingSkeleton key={i} />
+            ))
+          ) : error ? (
+            <ErrorState />
+          ) : products.length === 0 ? (
+            <EmptyState />
+          ) : (
+            products.map((product, index) => (
+              <div key={product.id} className="relative group">
+                {/* New Badge for first 3 products */}
+                {index < 3 && (
+                  <div className="absolute -top-3 -right-3 z-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                    NEW
+                  </div>
+                )}
+                <ProductCard product={product} />
+              </div>
+            ))
           )}
         </div>
 
-        {/* Features */}
-        <div className="flex flex-wrap gap-6 mb-6">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-            <span>Just arrived</span>
+        {/* View All Button - Mobile */}
+        {!loading && !error && products.length > 0 && (
+          <div className="mt-10 text-center md:hidden">
+            <Link
+              to="/shop"
+              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200 shadow-sm"
+            >
+              View All Products
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-            <span>Latest technology</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-            <span>Fresh inventory</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span>Be the first</span>
-          </div>
-        </div>
-      </div>
+        )}
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {loading ? (
-          Array.from({ length: limit }).map((_, i) => (
-            <LoadingSkeleton key={i} />
-          ))
-        ) : error ? (
-          <ErrorState />
-        ) : products.length === 0 ? (
-          <EmptyState />
-        ) : (
-          products.map((product, index) => (
-            <div key={product.id} className="relative">
-              {/* New Badge for first few products */}
-              {index < 3 && (
-                <div className="absolute -top-2 -left-2 z-10 bg-gradient-to-r from-emerald-400 to-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center animate-pulse">
-                  <Star className="h-3 w-3 mr-1" />
-                  NEW
+        {/* Info Cards */}
+        {!loading && !error && products.length > 0 && (
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+              <div className="flex items-start space-x-4">
+                <div className="bg-blue-100 p-3 rounded-lg flex-shrink-0">
+                  <Sparkles className="h-6 w-6 text-blue-600" />
                 </div>
-              )}
-              <ProductCard product={product} />
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Fresh Arrivals
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Explore the newest additions to our product lineup with the
+                    latest features and innovations.
+                  </p>
+                </div>
+              </div>
             </div>
-          ))
+
+            <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+              <div className="flex items-start space-x-4">
+                <div className="bg-green-100 p-3 rounded-lg flex-shrink-0">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Trending Now
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Stay ahead with products that are making waves in the market
+                    right now.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow duration-300">
+              <div className="flex items-start space-x-4">
+                <div className="bg-purple-100 p-3 rounded-lg flex-shrink-0">
+                  <Sparkles className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Quality Assured
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Every product is carefully selected to meet our high
+                    standards of quality.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* New Arrivals Info */}
-      {!loading && !error && products.length > 0 && (
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-100">
-            <div className="flex items-center mb-4">
-              <div className="bg-emerald-500 p-2 rounded-lg mr-3">
-                <Clock className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Fresh Arrivals</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Get your hands on the newest products as soon as they arrive in
-              our store.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-100">
-            <div className="flex items-center mb-6">
-              <div className="bg-teal-500 p-2 rounded-lg mr-3">
-                <Zap className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">Latest Technology</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Cutting-edge features and innovations to keep you ahead of the
-              curve.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl p-6 border border-cyan-100">
-            <div className="flex items-center mb-4">
-              <div className="bg-cyan-500 p-2 rounded-lg mr-3">
-                <Gift className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="font-semibold text-gray-900">First Access</h3>
-            </div>
-            <p className="text-gray-600 text-sm">
-              Be among the first to experience our newest products and
-              innovations.
-            </p>
-          </div>
-          <Link
-            to="/shop"
-            className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200 group"
-          >
-            Show All Products
-            <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-          </Link>
-        </div>
-      )}
     </section>
   );
 };
