@@ -112,13 +112,13 @@ const RecentlyAdded = ({ limit = 8 }) => {
         <p className="text-gray-600 mb-6">
           New products will appear here as we add them to our collection!
         </p>
-        <a
-          href="/shop"
+        <Link
+          to="/shop"
           className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200"
         >
           Browse All Products
           <ArrowRight className="ml-1 h-4 w-4" />
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -144,13 +144,13 @@ const RecentlyAdded = ({ limit = 8 }) => {
 
           {/* View All Link */}
           {!loading && !error && products.length > 0 && (
-            <a
-              href="/shop"
+            <Link
+              to="/shop"
               className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200 group"
             >
-              View All
+              Show All Products
               <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </a>
+            </Link>
           )}
         </div>
 
@@ -242,6 +242,13 @@ const RecentlyAdded = ({ limit = 8 }) => {
               innovations.
             </p>
           </div>
+          <Link
+            to="/shop"
+            className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200 group"
+          >
+            Show All Products
+            <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+          </Link>
         </div>
       )}
     </section>
