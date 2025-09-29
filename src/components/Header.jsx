@@ -36,7 +36,7 @@ const Header = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const { cartCount } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthSheetOpen, setIsAuthSheetOpen } = useAuth();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -421,7 +421,7 @@ const Header = () => {
                   </Button>
                 </div>
               ) : (
-                <Sheet>
+                <Sheet open={isAuthSheetOpen} onOpenChange={setIsAuthSheetOpen}>
                   <SheetTrigger asChild>
                     <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg hidden sm:flex">
                       <User className="mr-2 h-4 w-4" /> 
@@ -526,7 +526,7 @@ const Header = () => {
                         </Button>
                       </div>
                     ) : (
-                      <Sheet>
+                      <Sheet open={isAuthSheetOpen} onOpenChange={setIsAuthSheetOpen}>
                         <SheetTrigger asChild>
                           <Button className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
                             <User className="mr-2 h-4 w-4" /> Login

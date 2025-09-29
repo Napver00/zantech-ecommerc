@@ -7,12 +7,21 @@ import ReturnPolicy from './pages/ReturnPolicy';
 import Contact from './pages/Contact';
 import ProductPage from './pages/ProductPage';
 import Shop from './pages/Shop';
-import Dashboard from './pages/Dashboard';
 import Checkout from './pages/Checkout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'sonner';
+
+// Import new Dashboard components
+import DashboardLayout from './pages/Dashboard/DashboardLayout';
+import DashboardHome from './pages/Dashboard/DashboardHome';
+import Orders from './pages/Dashboard/Orders';
+import Downloads from './pages/Dashboard/Downloads';
+import Addresses from './pages/Dashboard/Addresses';
+import AccountDetails from './pages/Dashboard/AccountDetails';
+import Wishlist from './pages/Dashboard/Wishlist';
+
 
 function App() {
   return (
@@ -29,14 +38,24 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/checkout" element={<Checkout />} />
+            
+            {/* New Dashboard Routes */}
             <Route 
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <DashboardLayout />
                 </ProtectedRoute>
               } 
-            />
+            >
+              <Route index element={<DashboardHome />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="downloads" element={<Downloads />} />
+              <Route path="addresses" element={<Addresses />} />
+              <Route path="account-details" element={<AccountDetails />} />
+              <Route path="wishlist" element={<Wishlist />} />
+            </Route>
+
             <Route path="*" element={<HomePage />} />
           </Routes>
         </BrowserRouter>
@@ -60,4 +79,3 @@ function App() {
 }
 
 export default App;
-
