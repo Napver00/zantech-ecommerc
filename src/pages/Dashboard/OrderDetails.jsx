@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ArrowLeft, Package, MapPin, Receipt } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Package, MapPin, Receipt, Star } from 'lucide-react';
 import {
   Table,
   TableHeader,
@@ -13,6 +13,19 @@ import {
   TableRow,
   TableCell,
 } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 const OrderDetails = () => {
   const { invoiceCode } = useParams();
@@ -20,6 +33,9 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     if (!invoiceCode || !token) return;
@@ -52,6 +68,39 @@ const OrderDetails = () => {
     fetchOrderDetails();
   }, [invoiceCode, token]);
 
+  const handleRatingSubmit = async () => {
+    if (rating === 0 || !review.trim()) {
+      toast.error("Please provide a rating and a review.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.baseURL}/ratings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          star: rating,
+          reating: review,
+          product_id: selectedProduct.product_id
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Thank you for your feedback!");
+        // You might want to update the order details to reflect that the product has been rated.
+      } else {
+        throw new Error(data.message || 'Failed to submit rating.');
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   const getOrderStatusInfo = (status) => {
     switch (String(status)) {
         case '0': return { text: 'Processing', className: 'bg-blue-100 text-blue-800 border-blue-200' };
@@ -62,7 +111,7 @@ const OrderDetails = () => {
         default: return { text: 'Unknown', className: 'bg-gray-100 text-gray-800 border-gray-200' };
     }
   };
-  
+
   const getPaymentStatusInfo = (status) => {
     switch (String(status)) {
         case '0': return { text: 'Unpaid', className: 'bg-red-100 text-red-800 border-red-200' };
@@ -134,6 +183,7 @@ const OrderDetails = () => {
                         <TableHead>Quantity</TableHead>
                         <TableHead className="text-right">Price</TableHead>
                         <TableHead className="text-right">Subtotal</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -142,12 +192,52 @@ const OrderDetails = () => {
                             <TableCell>
                                 <div className="flex items-center gap-3">
                                     <img src={item.image} alt={item.name} className="w-12 h-12 object-contain rounded-md bg-gray-50" />
-                                    <span className="font-medium text-gray-800">{item.name}</span>
+                                    <Link to={`/product/${item.slug}`} className="font-medium text-gray-800 hover:text-blue-600 transition-colors">{item.name}</Link>
                                 </div>
                             </TableCell>
                             <TableCell>x {item.quantity}</TableCell>
                             <TableCell className="text-right">৳{Number(item.price).toLocaleString()}</TableCell>
                             <TableCell className="text-right font-semibold">৳{(item.quantity * item.price).toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setSelectedProduct(item)}
+                                        >
+                                            <Star className="h-4 w-4 mr-2" />
+                                            Rate
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Rate "{selectedProduct?.name}"</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Share your experience with this product.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <div className="flex items-center space-x-1">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star
+                                                    key={i}
+                                                    className={`h-6 w-6 cursor-pointer ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                                    onClick={() => setRating(i + 1)}
+                                                />
+                                            ))}
+                                        </div>
+                                        <Textarea
+                                            placeholder="Write your review here..."
+                                            value={review}
+                                            onChange={(e) => setReview(e.target.value)}
+                                        />
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel onClick={() => { setRating(0); setReview('')}}>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleRatingSubmit}>Submit</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -192,4 +282,3 @@ const OrderDetails = () => {
 };
 
 export default OrderDetails;
-
