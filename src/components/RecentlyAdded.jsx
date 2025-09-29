@@ -218,7 +218,7 @@ const RecentlyAdded = ({ limit = 8 }) => {
           </div>
 
           <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-6 border border-teal-100">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-6">
               <div className="bg-teal-500 p-2 rounded-lg mr-3">
                 <Zap className="h-5 w-5 text-white" />
               </div>

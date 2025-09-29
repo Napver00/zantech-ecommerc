@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart, LogOut, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -152,6 +158,8 @@ const Header = () => {
     }
   };
 
+  const isResourcesActive = location.pathname === '/blog' || location.pathname === '/tutorials';
+
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
       {/* Top Bar */}
@@ -228,29 +236,94 @@ const Header = () => {
           <nav className="hidden lg:flex items-center">
             <NavigationMenu>
               <NavigationMenuList className="space-x-2">
-                {[
-                  { path: '/shop', label: 'SHOP' },
-                  { path: '/project', label: 'PROJECT' },
-                  { path: '/about', label: 'ABOUT' },
-                  { path: '/contact', label: 'CONTACT' }
-                ].map(({ path, label }) => (
-                  <NavigationMenuItem key={path}>
-                    <NavigationMenuLink asChild>
-                      <Link 
-                        to={path} 
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link 
+                      to="/shop" 
+                      className={cn(
+                        'font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative',
+                        'after:content-[""] after:absolute after:left-1/2 after:bottom-0 after:h-0.5 after:bg-red-600 after:transform after:-translate-x-1/2 after:transition-all after:duration-300',
+                        location.pathname === '/shop' 
+                          ? 'text-blue-600 bg-blue-50 after:w-8' 
+                          : 'text-gray-700 after:w-0 hover:after:w-4'
+                      )}
+                    >
+                      SHOP
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Resources Dropdown */}
+                <NavigationMenuItem>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
                         className={cn(
-                          'font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative',
+                          'font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative flex items-center gap-1',
                           'after:content-[""] after:absolute after:left-1/2 after:bottom-0 after:h-0.5 after:bg-red-600 after:transform after:-translate-x-1/2 after:transition-all after:duration-300',
-                          location.pathname === path 
+                          isResourcesActive
                             ? 'text-blue-600 bg-blue-50 after:w-8' 
                             : 'text-gray-700 after:w-0 hover:after:w-4'
                         )}
                       >
-                        {label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                        RESOURCES
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-48 mt-2">
+                      <DropdownMenuItem asChild>
+                        <Link 
+                          to="/blog" 
+                          className="cursor-pointer font-medium"
+                        >
+                          Blog
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link 
+                          to="/tutorials" 
+                          className="cursor-pointer font-medium"
+                        >
+                          Tutorials
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link 
+                      to="/about" 
+                      className={cn(
+                        'font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative',
+                        'after:content-[""] after:absolute after:left-1/2 after:bottom-0 after:h-0.5 after:bg-red-600 after:transform after:-translate-x-1/2 after:transition-all after:duration-300',
+                        location.pathname === '/about' 
+                          ? 'text-blue-600 bg-blue-50 after:w-8' 
+                          : 'text-gray-700 after:w-0 hover:after:w-4'
+                      )}
+                    >
+                      ABOUT
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link 
+                      to="/contact" 
+                      className={cn(
+                        'font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative',
+                        'after:content-[""] after:absolute after:left-1/2 after:bottom-0 after:h-0.5 after:bg-red-600 after:transform after:-translate-x-1/2 after:transition-all after:duration-300',
+                        location.pathname === '/contact' 
+                          ? 'text-blue-600 bg-blue-50 after:w-8' 
+                          : 'text-gray-700 after:w-0 hover:after:w-4'
+                      )}
+                    >
+                      CONTACT
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </nav>
@@ -474,25 +547,68 @@ const Header = () => {
                     </form>
 
                     {/* Mobile Navigation Links */}
-                    {[
-                      { path: '/shop', label: 'SHOP' },
-                      { path: '/project', label: 'PROJECT' },
-                      { path: '/about', label: 'ABOUT' },
-                      { path: '/contact', label: 'CONTACT' }
-                    ].map(({ path, label }) => (
+                    <Link 
+                      to="/shop" 
+                      className={cn(
+                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
+                        location.pathname === '/shop' 
+                          ? "text-blue-600 bg-blue-50" 
+                          : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      SHOP
+                    </Link>
+
+                    {/* Resources Section - Mobile */}
+                    <div className="space-y-1">
+                      <div className="font-semibold py-3 px-4 text-gray-900">RESOURCES</div>
                       <Link 
-                        key={path}
-                        to={path} 
+                        to="/blog" 
                         className={cn(
-                          "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
-                          location.pathname === path 
-                            ? "text-blue-600 bg-blue-50" 
-                            : "text-gray-700 hover:bg-gray-50"
+                          "py-2 px-8 rounded-lg transition-colors duration-200 block",
+                          location.pathname === '/blog' 
+                            ? "text-blue-600 bg-blue-50 font-medium" 
+                            : "text-gray-600 hover:bg-gray-50"
                         )}
                       >
-                        {label}
+                        Blog
                       </Link>
-                    ))}
+                      <Link 
+                        to="/tutorials" 
+                        className={cn(
+                          "py-2 px-8 rounded-lg transition-colors duration-200 block",
+                          location.pathname === '/tutorials' 
+                            ? "text-blue-600 bg-blue-50 font-medium" 
+                            : "text-gray-600 hover:bg-gray-50"
+                        )}
+                      >
+                        Tutorials
+                      </Link>
+                    </div>
+
+                    <Link 
+                      to="/about" 
+                      className={cn(
+                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
+                        location.pathname === '/about' 
+                          ? "text-blue-600 bg-blue-50" 
+                          : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      ABOUT
+                    </Link>
+
+                    <Link 
+                      to="/contact" 
+                      className={cn(
+                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
+                        location.pathname === '/contact' 
+                          ? "text-blue-600 bg-blue-50" 
+                          : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      CONTACT
+                    </Link>
 
                     <div className="border-t border-gray-200 my-4"></div>
                     
