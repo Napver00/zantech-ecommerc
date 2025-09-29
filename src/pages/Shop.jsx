@@ -13,7 +13,10 @@ import {
   Grid3X3,
   List,
   ArrowUpDown,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +26,6 @@ const Shop = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   
@@ -34,7 +36,7 @@ const Shop = () => {
     max_price: '',
     category_slug: '',
     page: 1,
-    limit: 20
+    limit: 12
   });
   
   // UI states
@@ -48,7 +50,7 @@ const Shop = () => {
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
-    per_page: 20,
+    per_page: 12,
     total: 0
   });
 
@@ -71,8 +73,7 @@ const Shop = () => {
 
   // Fetch products with filters
   const fetchProducts = useCallback(async (currentFilters = filters) => {
-    const loading = currentFilters.page === 1 ? setIsLoading : setIsFilterLoading;
-    loading(true);
+    setIsLoading(true);
     setError(null);
     
     try {
@@ -93,25 +94,23 @@ const Shop = () => {
       let paginationData = {};
       
       if (json.success) {
+        // Products are directly in json.data array
         if (Array.isArray(json.data)) {
           productData = json.data;
-        } else if (json.data && Array.isArray(json.data.data)) {
-          // Paginated response
-          productData = json.data.data;
+        }
+        
+        // Pagination data is in separate pagination object
+        if (json.pagination) {
           paginationData = {
-            current_page: json.data.current_page || 1,
-            last_page: json.data.last_page || 1,
-            per_page: json.data.per_page || 20,
-            total: json.data.total || 0
+            current_page: json.pagination.current_page || 1,
+            last_page: json.pagination.total_pages || 1,
+            per_page: json.pagination.per_page || 12,
+            total: json.pagination.total_rows || 0
           };
         }
       }
       
-      if (currentFilters.page === 1) {
-        setProducts(productData);
-      } else {
-        setProducts(prev => [...prev, ...productData]);
-      }
+      setProducts(productData);
       
       if (Object.keys(paginationData).length > 0) {
         setPagination(paginationData);
@@ -121,7 +120,7 @@ const Shop = () => {
       console.error('Failed to fetch products:', err);
       setError(err.message || 'Failed to load products');
     } finally {
-      loading(false);
+      setIsLoading(false);
     }
   }, [filters]);
 
@@ -152,18 +151,20 @@ const Shop = () => {
       max_price: '',
       category_slug: '',
       page: 1,
-      limit: 20
+      limit: 12
     };
     setFilters(clearedFilters);
     fetchProducts(clearedFilters);
   };
 
-  // Load more products
-  const loadMore = () => {
-    if (pagination.current_page < pagination.last_page && !isFilterLoading) {
-      const newFilters = { ...filters, page: filters.page + 1 };
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page !== filters.page && page >= 1 && page <= pagination.last_page) {
+      const newFilters = { ...filters, page };
       setFilters(newFilters);
       fetchProducts(newFilters);
+      // Scroll to top of products section
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -180,11 +181,11 @@ const Shop = () => {
     id: p.id ?? p._id,
     slug: p.slug ?? p.product_slug ?? (p._id ? String(p._id) : undefined),
     name: p.name ?? p.title ?? 'Untitled Product',
-    price: Number(p.price ?? p.originalPrice ?? 0),
-    discountedPrice: p.discountedPrice ?? p.discount_price ?? p.sale_price ?? null,
-    discount: p.discount ?? (p.discountedPrice ? p.price - p.discountedPrice : 0),
-    discountPercentage: p.discountPercentage ?? p.discount_percentage ?? null,
-    image: Array.isArray(p.image_paths) ? p.image_paths[0] : (p.image || p.image_path || p.image_url || '/placeholder-product.jpg'),
+    price: Number(p.price ?? 0),
+    discountedPrice: p.discountedPrice ? Number(p.discountedPrice) : null,
+    discount: p.discount ?? 0,
+    discountPercentage: p.discountPercentage ?? null,
+    image: p.image || '/placeholder-product.jpg',
     stock: p.quantity ?? p.stock ?? p.qty ?? null,
     rating: p.rating ?? null,
     reviews: p.reviews_count ?? p.reviews ?? null,
@@ -192,6 +193,131 @@ const Shop = () => {
     categories: p.categories ?? [],
     _raw: p,
   });
+
+  // Pagination Component
+  const Pagination = () => {
+    const { current_page, last_page, total } = pagination;
+    
+    if (last_page <= 1) return null;
+
+    const getPageNumbers = () => {
+      const pages = [];
+      const maxVisible = 7;
+      
+      if (last_page <= maxVisible) {
+        // Show all pages if total pages is small
+        for (let i = 1; i <= last_page; i++) {
+          pages.push(i);
+        }
+      } else {
+        // Show smart pagination with ellipsis
+        if (current_page <= 4) {
+          // Show first 5 pages + ellipsis + last page
+          for (let i = 1; i <= 5; i++) pages.push(i);
+          if (last_page > 6) pages.push('...');
+          pages.push(last_page);
+        } else if (current_page >= last_page - 3) {
+          // Show first page + ellipsis + last 5 pages
+          pages.push(1);
+          if (last_page > 6) pages.push('...');
+          for (let i = last_page - 4; i <= last_page; i++) pages.push(i);
+        } else {
+          // Show first page + ellipsis + current-1, current, current+1 + ellipsis + last page
+          pages.push(1);
+          pages.push('...');
+          for (let i = current_page - 1; i <= current_page + 1; i++) pages.push(i);
+          pages.push('...');
+          pages.push(last_page);
+        }
+      }
+      
+      return pages;
+    };
+
+    const pageNumbers = getPageNumbers();
+
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Page Info */}
+          <div className="text-sm text-gray-600">
+            Showing page {current_page} of {last_page} 
+            <span className="hidden sm:inline">
+              {' '}({total.toLocaleString()} total products)
+            </span>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center gap-1">
+            {/* Previous Button */}
+            <Button
+              onClick={() => handlePageChange(current_page - 1)}
+              disabled={current_page === 1}
+              variant="outline"
+              size="sm"
+              className="h-9 px-3"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline ml-1">Previous</span>
+            </Button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1 mx-2">
+              {pageNumbers.map((page, index) => (
+                page === '...' ? (
+                  <span key={`ellipsis-${index}`} className="px-2 py-1">
+                    <MoreHorizontal className="h-4 w-4 text-gray-400" />
+                  </span>
+                ) : (
+                  <Button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    variant={current_page === page ? "default" : "outline"}
+                    size="sm"
+                    className={`h-9 w-9 p-0 ${
+                      current_page === page 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : 'hover:bg-blue-50'
+                    }`}
+                  >
+                    {page}
+                  </Button>
+                )
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <Button
+              onClick={() => handlePageChange(current_page + 1)}
+              disabled={current_page === last_page}
+              variant="outline"
+              size="sm"
+              className="h-9 px-3"
+            >
+              <span className="hidden sm:inline mr-1">Next</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Quick Jump */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-gray-600 hidden md:inline">Go to:</span>
+            <select
+              value={current_page}
+              onChange={(e) => handlePageChange(parseInt(e.target.value))}
+              className="border border-gray-200 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {Array.from({ length: last_page }, (_, i) => i + 1).map(page => (
+                <option key={page} value={page}>
+                  Page {page}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const LoadingSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -406,7 +532,7 @@ const Shop = () => {
                     {/* Results Count */}
                     {!isLoading && (
                       <span className="text-sm text-gray-600">
-                        Showing {products.length} of {pagination.total.toLocaleString()} products
+                        Showing {((pagination.current_page - 1) * pagination.per_page) + 1}-{Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total.toLocaleString()} products
                       </span>
                     )}
                   </div>
@@ -472,25 +598,8 @@ const Shop = () => {
                     ))}
                   </div>
 
-                  {/* Load More Button */}
-                  {pagination.current_page < pagination.last_page && (
-                    <div className="text-center mt-12">
-                      <Button
-                        onClick={loadMore}
-                        disabled={isFilterLoading}
-                        className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-base"
-                      >
-                        {isFilterLoading ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                            Loading...
-                          </>
-                        ) : (
-                          `Load More Products (${pagination.total - products.length} remaining)`
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                  {/* Pagination */}
+                  <Pagination />
                 </>
               )}
             </div>

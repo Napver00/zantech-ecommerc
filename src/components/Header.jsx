@@ -25,8 +25,6 @@ const YouTubeIcon = ({ size = 16 }) => (
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeLink, setActiveLink] = useState('Categories');
-  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [company, setCompany] = useState(null);
@@ -227,48 +225,6 @@ const Header = () => {
           <nav className="hidden lg:flex items-center">
             <NavigationMenu>
               <NavigationMenuList className="space-x-2">
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger
-                    className={cn(
-                      "font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 hover:bg-blue-50 relative",
-                      "after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:h-0.5 after:bg-red-600 after:transform after:-translate-x-1/2 after:transition-all after:duration-300",
-                      activeLink === 'Categories' ? "text-blue-600 bg-blue-50 after:w-8" : "text-gray-700 after:w-0 hover:after:w-4",
-                      "data-[state=open]:text-blue-600 data-[state=open]:bg-blue-50 data-[state=open]:after:w-8"
-                    )}
-                    onClick={() => setActiveLink('Categories')}
-                  >
-                    CATEGORIES
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-[500px] p-6 bg-white shadow-xl rounded-xl border border-gray-100">
-                      <div className="mb-4">
-                        <h3 className="font-semibold text-gray-900 mb-2">Product Categories</h3>
-                        <p className="text-sm text-gray-600">Explore our range of products</p>
-                      </div>
-                      <ul className="grid grid-cols-2 gap-3">
-                        {isLoading ? (
-                          <div className="col-span-2 text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="text-gray-500 mt-2">Loading categories...</p>
-                          </div>
-                        ) : error ? (
-                          <p className="col-span-2 text-center py-4 text-red-500">Could not load categories.</p>
-                        ) : (
-                          categories.map((category) => (
-                            <ListItem 
-                              key={category.id} 
-                              href={`/category/${category.slug}`} 
-                              title={category.name}
-                            >
-                              {category.description}
-                            </ListItem>
-                          ))
-                        )}
-                      </ul>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
                 {[
                   { path: '/shop', label: 'SHOP' },
                   { path: '/project', label: 'PROJECT' },
