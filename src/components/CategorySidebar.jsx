@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { config } from '@/config';
 import { Menu, ChevronRight, AlertTriangle, Grid3X3 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -59,6 +60,13 @@ const CategorySidebar = () => {
     </div>
   );
 
+  const navigate = useNavigate();
+
+  const handleSelectCategory = (slug) => {
+    // Navigate to shop page with category slug as query param
+    navigate(`/shop?category_slug=${encodeURIComponent(slug)}`);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header */}
@@ -88,9 +96,10 @@ const CategorySidebar = () => {
           <ul className="py-2">
             {categories.map((category, index) => (
               <li key={category.id} className="group">
-                <a 
-                  href={`/category/${category.slug}`} 
-                  className="flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 group"
+                <button
+                  type="button"
+                  onClick={() => handleSelectCategory(category.slug)}
+                  className="w-full text-left flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-all duration-200 border-l-4 border-transparent hover:border-blue-500 group"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-gray-300 rounded-full group-hover:bg-blue-500 transition-colors duration-200"></div>
@@ -102,7 +111,7 @@ const CategorySidebar = () => {
                     size={14} 
                     className="text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" 
                   />
-                </a>
+                </button>
                 {index < categories.length - 1 && (
                   <div className="mx-4 h-px bg-gray-100"></div>
                 )}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
@@ -125,9 +126,25 @@ const Shop = () => {
   }, [filters]);
 
   // Initial load
+  const location = useLocation();
+
+  // When location (query params) change, update filters accordingly and fetch
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const params = new URLSearchParams(location.search);
+    const categoryFromUrl = params.get('category_slug') || '';
+
+    // Build filters based on existing filters but override category_slug if present in URL
+    const initialFilters = {
+      ...filters,
+      category_slug: categoryFromUrl,
+      page: 1
+    };
+
+    // Set filters state and fetch
+    setFilters(initialFilters);
+    fetchProducts(initialFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {

@@ -3,6 +3,7 @@ import ProductCard from "./ProductCard";
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Trophy, AlertTriangle, Zap, ArrowRight, Target, Award, Cpu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CompetitionPackage = () => {
   const [products, setProducts] = useState([]);
@@ -104,13 +105,13 @@ const CompetitionPackage = () => {
           
           {/* View All Link */}
           {!loading && !error && products.length > 0 && (
-            <a 
-              href="/category/competition-robotics-kits" 
+            <Link
+              to="/shop?category_slug=competition-robotics-kits"
               className="flex items-center text-orange-600 hover:text-orange-700 font-medium transition-colors duration-200 group"
             >
               View All
               <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </a>
+            </Link>
           )}
         </div>
 
@@ -165,20 +166,20 @@ const CompetitionPackage = () => {
               Our competition robotics kits are designed by professionals and tested by champions. 
               Get the tools you need to dominate the competition.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/category/competition-robotics-kits"
-                className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                Browse Competition Kits
-              </a>
-              <a 
-                href="/competition-guide"
-                className="border-2 border-gray-300 hover:border-orange-300 bg-white text-gray-700 hover:text-orange-700 px-6 py-3 rounded-lg font-medium transition-all duration-200"
-              >
-                Competition Guide
-              </a>
-            </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    to="/shop?category_slug=competition-robotics-kits"
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Browse Competition Kits
+                  </Link>
+                  <Link
+                    to="/competition-guide"
+                    className="border-2 border-gray-300 hover:border-orange-300 bg-white text-gray-700 hover:text-orange-700 px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                  >
+                    Competition Guide
+                  </Link>
+                </div>
           </div>
         </div>
       )}

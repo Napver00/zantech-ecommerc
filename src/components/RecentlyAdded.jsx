@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { config } from "@/config";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from 'react-router-dom';
 import {
   Sparkles,
   AlertTriangle,

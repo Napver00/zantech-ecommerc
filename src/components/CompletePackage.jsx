@@ -3,6 +3,7 @@ import ProductCard from "./ProductCard";
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, AlertTriangle, Sparkles, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CompletePackage = () => {
   const [products, setProducts] = useState([]);
@@ -104,13 +105,13 @@ const CompletePackage = () => {
           
           {/* View All Link */}
           {!loading && !error && products.length > 0 && (
-            <a 
-              href="/category/starter-kit" 
+            <Link
+              to="/shop?category_slug=starter-kit"
               className="flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 group"
             >
               View All
               <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </a>
+            </Link>
           )}
         </div>
 
@@ -161,12 +162,12 @@ const CompletePackage = () => {
               Complete components, detailed instructions, and expert support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/category/starter-kit"
+              <Link
+                to="/shop?category_slug=starter-kit"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Browse All Starter Kits
-              </a>
+              </Link>
               <a 
                 href="/contact"
                 className="border-2 border-gray-300 hover:border-blue-300 bg-white text-gray-700 hover:text-blue-700 px-6 py-3 rounded-lg font-medium transition-all duration-200"
