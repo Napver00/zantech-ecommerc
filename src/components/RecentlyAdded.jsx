@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { config } from "@/config";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import {
   Sparkles,
   AlertTriangle,
@@ -145,7 +145,7 @@ const RecentlyAdded = ({ limit = 8 }) => {
           {/* View All Link */}
           {!loading && !error && products.length > 0 && (
             <a
-              href="/new-arrivals"
+              href="/shop"
               className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200 group"
             >
               View All
