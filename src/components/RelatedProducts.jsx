@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { config } from "@/config";
-import { Compass } from "lucide-react";
+import { Compass, ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const RelatedProducts = ({ categorySlug, currentProductId }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (!categorySlug) {
@@ -55,6 +56,19 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
     fetchRelatedProducts();
   }, [categorySlug, currentProductId]);
 
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? products.length - 4 : prevIndex - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === products.length - 4 ? 0 : prevIndex + 1
+    );
+  };
+
+
   if (loading) {
     return (
       <div className="bg-white rounded-2xl p-8 border border-gray-200">
@@ -75,14 +89,39 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
 
   return (
     <div className="bg-white rounded-2xl p-8 border border-gray-200">
-      <div className="flex items-center gap-3 mb-6">
-        <Compass className="h-6 w-6 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Related Products</h2>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+            <Compass className="h-6 w-6 text-blue-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Related Products</h2>
+        </div>
+        {products.length > 4 && (
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrev}
+              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        )}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+      <div className="overflow-hidden">
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * (100 / 4)}%)` }}
+        >
+          {products.map((p) => (
+            <div key={p.id} className="w-1/4 flex-shrink-0 px-3">
+                <ProductCard product={p} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
