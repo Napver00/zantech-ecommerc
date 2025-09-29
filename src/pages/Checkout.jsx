@@ -18,6 +18,9 @@ const Checkout = () => {
     const navigate = useNavigate();
 
     const [orderInfo, setOrderInfo] = useState(null);
+    const [shippingAddresses, setShippingAddresses] = useState([]);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
     const [shippingOption, setShippingOption] = useState('localPickup');
     const [paymentMethod, setPaymentMethod] = useState('1');
     const [couponCode, setCouponCode] = useState('');
@@ -40,10 +43,36 @@ const Checkout = () => {
     useEffect(() => {
         if (user) {
             setFormData(prev => ({ ...prev, user_name: user.name, userphone: user.phone, address: user.address || '' }));
+            fetchShippingAddresses();
         } else {
             setIsGuestCheckout(false);
+            setShippingAddresses([]);
+            setSelectedAddressId(null);
         }
     }, [user]);
+
+    const fetchShippingAddresses = async () => {
+        setIsLoadingAddresses(true);
+        try {
+            const response = await fetch(`${config.baseURL}/shipping-addresses`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (data.success && data.data) {
+                setShippingAddresses(data.data);
+                // Auto-select first address if available
+                if (data.data.length > 0) {
+                    setSelectedAddressId(data.data[0].id);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch shipping addresses:', error);
+        } finally {
+            setIsLoadingAddresses(false);
+        }
+    };
 
     useEffect(() => {
         const fetchOrderInfo = async () => {
@@ -135,8 +164,12 @@ const Checkout = () => {
                 setOrderError("User information is missing. Please try logging in again.");
                 return;
             }
-            if (!user.address || !user.address.trim()) {
-                setOrderError("Please add your shipping address in your dashboard before placing an order.");
+            if (shippingAddresses.length === 0) {
+                setOrderError("Please add a shipping address in your dashboard before placing an order.");
+                return;
+            }
+            if (!selectedAddressId) {
+                setOrderError("Please select a shipping address.");
                 return;
             }
         }
@@ -161,7 +194,7 @@ const Checkout = () => {
             shipping_charge: shippingCharge,
             payment_type: parseInt(paymentMethod),
             products: cartItems.map(item => ({ product_id: item.id, quantity: item.quantity })),
-            ...(user && { user_id: user.id }),
+            ...(user && { user_id: user.id, shipping_id: selectedAddressId }),
             ...((!user && isGuestCheckout) && { 
                 user_name: formData.user_name.trim(), 
                 userphone: formData.userphone.trim(), 
@@ -251,43 +284,67 @@ const Checkout = () => {
                             <div className="p-8">
                                 {user ? (
                                     <div className="space-y-4">
-                                        <div className="flex items-start gap-3 bg-green-50 p-4 rounded-lg border border-green-200">
-                                            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <span className="font-medium text-gray-900">Logged in as {user.name}</span>
-                                                <p className="text-sm text-gray-600 mt-1">Delivering to your registered address</p>
+                                        {isLoadingAddresses ? (
+                                            <div className="flex items-center justify-center py-8">
+                                                <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
                                             </div>
-                                        </div>
-                                        <div className="bg-gray-50 p-5 rounded-lg space-y-3">
-                                            <div className="flex items-start gap-3">
-                                                <User className="h-5 w-5 text-gray-500 mt-0.5" />
-                                                <div>
-                                                    <p className="text-xs text-gray-500 font-medium">Name</p>
-                                                    <p className="text-gray-900 font-medium">{user.name}</p>
+                                        ) : shippingAddresses.length > 0 ? (
+                                            <>
+                                                <div className="mb-4">
+                                                    <p className="text-sm font-medium text-gray-900">Select Shipping Address *</p>
+                                                    <p className="text-xs text-gray-600 mt-1">Choose where you want your order delivered</p>
                                                 </div>
+                                                
+                                                <div className="grid grid-cols-1 gap-3">
+                                                    {shippingAddresses.map((addr) => (
+                                                        <label 
+                                                            key={addr.id}
+                                                            htmlFor={`addr-${addr.id}`}
+                                                            className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
+                                                                selectedAddressId === addr.id 
+                                                                ? 'border-blue-600 bg-blue-50' 
+                                                                : 'border-gray-200 hover:border-blue-300'
+                                                            }`}
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                id={`addr-${addr.id}`}
+                                                                name="shipping-address"
+                                                                value={addr.id}
+                                                                checked={selectedAddressId === addr.id}
+                                                                onChange={() => setSelectedAddressId(addr.id)}
+                                                                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="font-medium text-gray-900 mb-1">
+                                                                    {addr.f_name} {addr.l_name}
+                                                                </div>
+                                                                <div className="text-sm text-gray-600">
+                                                                    <p>{addr.address}, {addr.city} - {addr.zip}</p>
+                                                                    <p className="mt-1 font-medium text-gray-900">{addr.phone}</p>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                                
+                                                <Link to="/dashboard/addresses" className="inline-flex items-center gap-1 text-sm text-blue-600 font-medium hover:text-blue-700 mt-2">
+                                                    Manage Addresses →
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <div className="text-center py-8 bg-orange-50 rounded-lg border-2 border-orange-200">
+                                                <AlertCircle className="h-12 w-12 text-orange-600 mx-auto mb-3" />
+                                                <h3 className="text-base font-medium text-gray-900 mb-2">No Shipping Address Found</h3>
+                                                <p className="text-sm text-gray-600 mb-4">Please add a shipping address to place your order</p>
+                                                <Link to="/dashboard/addresses">
+                                                    <Button className="bg-blue-600 hover:bg-blue-700">
+                                                        <MapPin className="h-4 w-4 mr-2" />
+                                                        Add Shipping Address
+                                                    </Button>
+                                                </Link>
                                             </div>
-                                            <div className="flex items-start gap-3">
-                                                <svg className="h-5 w-5 text-gray-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                </svg>
-                                                <div>
-                                                    <p className="text-xs text-gray-500 font-medium">Phone</p>
-                                                    <p className="text-gray-900 font-medium">{user.phone}</p>
-                                                </div>
-                                            </div>
-                                            {user.address && (
-                                                <div className="flex items-start gap-3">
-                                                    <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
-                                                    <div>
-                                                        <p className="text-xs text-gray-500 font-medium">Address</p>
-                                                        <p className="text-gray-900 font-medium">{user.address}</p>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-blue-600 font-medium hover:text-blue-700">
-                                            Edit in Dashboard →
-                                        </Link>
+                                        )}
                                     </div>
                                 ) : (
                                     <div>
