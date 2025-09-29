@@ -7,8 +7,6 @@ import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
