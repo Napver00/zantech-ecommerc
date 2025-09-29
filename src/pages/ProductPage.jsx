@@ -14,13 +14,14 @@ import {
   Minus,
   Plus,
 } from "lucide-react";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { config } from "@/config";
 import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/context/CartContext";
+import RelatedProducts from "@/components/RelatedProducts"; // Import the new component
 
 const Gallery = ({ images = [], alt = "" }) => {
   const imgs = Array.isArray(images)
@@ -598,7 +599,6 @@ const ProductPage = () => {
                 </div>
               )}
 
-              {/* Reviews Section */}
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Customer Reviews
@@ -646,6 +646,12 @@ const ProductPage = () => {
                   </div>
                 )}
               </div>
+              
+              {/* Related Products Section */}
+              <RelatedProducts 
+                categoryId={product.categories?.[0]?.slug} 
+                currentProductId={product.id} 
+              />
             </div>
           </div>
         ) : null}
