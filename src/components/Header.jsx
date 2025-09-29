@@ -379,7 +379,7 @@ const Header = () => {
                           >
                             <div className="relative">
                               <img
-                                src={product.image_paths || '/placeholder-product.jpg'}
+                                src={product.image || '/placeholder-product.jpg'}
                                 alt={product.name}
                                 className="w-20 h-20 object-cover rounded-xl bg-gray-100 group-hover:scale-105 transition-transform duration-200"
                               />
