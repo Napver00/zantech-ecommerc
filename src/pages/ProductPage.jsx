@@ -21,7 +21,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/context/CartContext";
-import RelatedProducts from "@/components/RelatedProducts"; // Import the new component
+import { useAuth } from "@/context/AuthContext"; // Import useAuth
+import { toast } from "sonner";
+import RelatedProducts from "@/components/RelatedProducts";
 
 const Gallery = ({ images = [], alt = "" }) => {
   const imgs = Array.isArray(images)
@@ -300,12 +302,40 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
+  const { user, addToWishlist, wishlist } = useAuth(); // Get auth context
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
+  // Check if product is in wishlist
+  useEffect(() => {
+    if (product && Array.isArray(wishlist)) {
+      setIsWishlisted(wishlist.includes(product.id));
+    }
+  }, [product, wishlist]);
+  
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, quantity);
+    }
+  };
+
+  const handleWishlistToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!product) return;
+
+    if (isWishlisted) {
+      toast.info("Already in wishlist", {
+        description: "This item is already in your wishlist",
+        duration: 3000,
+      });
+      return;
+    }
+    
+    const result = await addToWishlist(product.id);
+    if (result.success) {
+      setIsWishlisted(true);
     }
   };
 
@@ -528,7 +558,7 @@ const ProductPage = () => {
                       Add to Cart
                     </button>
                     <button
-                      onClick={() => setIsWishlisted(!isWishlisted)}
+                      onClick={handleWishlistToggle}
                       className={`p-4 border-2 rounded-xl transition-all ${
                         isWishlisted
                           ? "border-red-200 bg-red-50 text-red-600"
@@ -548,26 +578,6 @@ const ProductPage = () => {
               {product.is_bundle === 1 && product.bundle_items && (
                 <BundleItems bundleItems={product.bundle_items} />
               )}
-
-              <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Share this product
-                </h3>
-                <div className="flex items-center gap-3">
-                  <button className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors">
-                    <Facebook className="w-5 h-5" />
-                  </button>
-                  <button className="p-3 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg transition-colors">
-                    <MessageSquare className="w-5 h-5" />
-                  </button>
-                  <button className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
-                    <Linkedin className="w-5 h-5" />
-                  </button>
-                  <button className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors">
-                    <LinkIcon className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
 
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
