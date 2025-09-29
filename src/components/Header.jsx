@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { Search, ShoppingCart, User, Menu, Facebook, Instagram, Linkedin, Link as LinkIcon, Bell, Heart, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
   NavigationMenuLink,
-} from './ui/navigation-menu';
+} from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { config } from '@/config';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { Cart } from './Cart';
+import { useCart } from '@/context/CartContext';
+import { Cart } from '@/components/Cart';
+import { useAuth } from '@/context/AuthContext';
+import { AuthSheet } from '@/components/AuthSheet';
 
 const YouTubeIcon = ({ size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -29,12 +29,14 @@ const Header = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [company, setCompany] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const { cartCount } = useCart();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -77,11 +79,10 @@ const Header = () => {
     return () => { mounted = false; };
   }, []);
 
-  // Debounced search function
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery.trim() && searchQuery.length > 2) {
-        performSearch(searchQuery, true); // true for preview mode
+        performSearch(searchQuery, true);
       } else {
         setSearchResults([]);
         setShowSearchResults(false);
@@ -96,7 +97,7 @@ const Header = () => {
 
     setIsSearching(true);
     try {
-      const limit = isPreview ? 5 : 20; // Show fewer results in preview
+      const limit = isPreview ? 5 : 20;
       const response = await fetch(
         `${config.baseURL}/products?search=${encodeURIComponent(query)}&limit=${limit}`
       );
@@ -126,7 +127,6 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to search results page
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       setShowSearchResults(false);
     }
@@ -257,7 +257,7 @@ const Header = () => {
 
           {/* Search & Actions */}
           <div className="flex items-center gap-4">
-            {/* Search Bar with Dropdown - Made Much Wider */}
+            {/* Search Bar with Dropdown */}
             <div className="relative w-72 sm:w-96 hidden md:block">
               <form onSubmit={handleSearch} className="relative">
                 <Input 
@@ -281,7 +281,7 @@ const Header = () => {
                 </button>
               </form>
               
-              {/* Enhanced Search Results Dropdown - Much Bigger */}
+              {/* Search Results Dropdown */}
               {showSearchResults && (searchResults.length > 0 || isSearching) && (
                 <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 max-h-[32rem] overflow-y-auto">
                   {isSearching ? (
@@ -401,11 +401,36 @@ const Header = () => {
                 <Cart />
               </Sheet>
 
-              {/* Login Button */}
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg hidden sm:flex">
-                <User className="mr-2 h-4 w-4" /> 
-                Login
-              </Button>
+              {/* Login/User Section - Desktop */}
+              {user ? (
+                <div className="hidden sm:flex items-center gap-2">
+                  <Link to="/dashboard">
+                    <Button variant="outline" className="hover:bg-blue-50 transition-colors duration-200">
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    onClick={logout} 
+                    variant="ghost" 
+                    size="icon"
+                    className="hover:bg-red-50 transition-colors duration-200 group"
+                    title="Logout"
+                  >
+                    <LogOut className="h-4 w-4 text-gray-600 group-hover:text-red-600" />
+                  </Button>
+                </div>
+              ) : (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg hidden sm:flex">
+                      <User className="mr-2 h-4 w-4" /> 
+                      Login
+                    </Button>
+                  </SheetTrigger>
+                  <AuthSheet />
+                </Sheet>
+              )}
             </div>
 
             {/* Mobile Menu */}
@@ -421,6 +446,14 @@ const Header = () => {
                     <div className="mb-6">
                       <img src="/zantech-logo.webp" alt="ZANTech" className="h-10" />
                     </div>
+                    
+                    {/* User Info - Mobile */}
+                    {user && (
+                      <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                        <p className="text-sm font-medium text-gray-900">Welcome back!</p>
+                        <p className="text-xs text-gray-600 mt-1">{user.email || user.name}</p>
+                      </div>
+                    )}
                     
                     {/* Mobile Search */}
                     <form onSubmit={handleSearch} className="relative mb-6">
@@ -476,10 +509,32 @@ const Header = () => {
                       </Link>
                     </div>
 
-                    {/* Mobile Login Button */}
-                    <Button className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
-                      <User className="mr-2 h-4 w-4" /> Login
-                    </Button>
+                    {/* Mobile Login/Dashboard Button */}
+                    {user ? (
+                      <div className="space-y-2 mt-6">
+                        <Link to="/dashboard">
+                          <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
+                            <User className="mr-2 h-4 w-4" /> Dashboard
+                          </Button>
+                        </Link>
+                        <Button 
+                          onClick={logout}
+                          variant="outline"
+                          className="w-full hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" /> Logout
+                        </Button>
+                      </div>
+                    ) : (
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
+                            <User className="mr-2 h-4 w-4" /> Login
+                          </Button>
+                        </SheetTrigger>
+                        <AuthSheet />
+                      </Sheet>
+                    )}
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -490,28 +545,5 @@ const Header = () => {
     </header>
   );
 };
-
-const ListItem = React.forwardRef(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-all duration-200 hover:bg-blue-50 hover:text-blue-900 focus:bg-blue-50 focus:text-blue-900 border border-transparent hover:border-blue-100",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none text-gray-900">{title}</div>
-          <p className="line-clamp-2 text-xs leading-snug text-gray-600">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";
 
 export default Header;
