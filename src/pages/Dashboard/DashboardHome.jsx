@@ -1,10 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Package, Download, MapPin, User, Heart, ArrowRight } from 'lucide-react';
+import { config } from '../../config';
+import { Package, Download, MapPin, User, Heart, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Skeleton } from '../../components/ui/skeleton';
 
 const DashboardHome = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, token } = useAuth();
+    const [userInfo, setUserInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            if (!token) return;
+            try {
+                const response = await fetch(`${config.baseURL}/users/info`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Could not fetch user summary.');
+                }
+                const data = await response.json();
+                if (data.success) {
+                    setUserInfo(data.data);
+                } else {
+                    throw new Error(data.message || 'Failed to get user info.');
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserInfo();
+    }, [token]);
 
     const dashboardItems = [
         { 
@@ -37,6 +70,13 @@ const DashboardHome = () => {
             label: 'Wishlist',
             description: 'View saved items'
         },
+    ];
+
+    const summaryItems = [
+        { label: 'Total Orders', value: userInfo?.total_orders },
+        { label: 'Wishlist Items', value: userInfo?.total_wishlist },
+        { label: 'Addresses', value: userInfo?.total_shipping_addr },
+        { label: 'Downloads', value: 0 }, // Assuming downloads are not in the API yet
     ];
 
     return (
@@ -81,27 +121,33 @@ const DashboardHome = () => {
                 </div>
             </div>
 
-            {/* Recent Activity Section (Optional) */}
+            {/* Account Summary Section */}
             <div className="mt-8 pt-6 border-t border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Account Summary</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-sm text-gray-600 mb-1">Total Orders</p>
-                        <p className="text-2xl font-bold text-gray-900">-</p>
+                {loading ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                             <div key={i} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <Skeleton className="h-4 w-2/3 mb-2" />
+                                <Skeleton className="h-8 w-1/3" />
+                            </div>
+                        ))}
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-sm text-gray-600 mb-1">Wishlist Items</p>
-                        <p className="text-2xl font-bold text-gray-900">-</p>
+                ) : error ? (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 flex items-center gap-3">
+                        <AlertTriangle className="h-5 w-5"/>
+                        <span>{error}</span>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-sm text-gray-600 mb-1">Addresses</p>
-                        <p className="text-2xl font-bold text-gray-900">-</p>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {summaryItems.map(item => (
+                            <div key={item.label} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">{item.label}</p>
+                                <p className="text-2xl font-bold text-gray-900">{item.value ?? 0}</p>
+                            </div>
+                        ))}
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-sm text-gray-600 mb-1">Downloads</p>
-                        <p className="text-2xl font-bold text-gray-900">-</p>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );
