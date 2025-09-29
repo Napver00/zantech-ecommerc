@@ -17,6 +17,7 @@ import { Toaster } from 'sonner';
 import DashboardLayout from './pages/Dashboard/DashboardLayout';
 import DashboardHome from './pages/Dashboard/DashboardHome';
 import Orders from './pages/Dashboard/Orders';
+import OrderDetails from './pages/Dashboard/OrderDetails';
 import Downloads from './pages/Dashboard/Downloads';
 import Addresses from './pages/Dashboard/Addresses';
 import AccountDetails from './pages/Dashboard/AccountDetails';
@@ -50,6 +51,7 @@ function App() {
             >
               <Route index element={<DashboardHome />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="orders/:invoiceCode" element={<OrderDetails />} />
               <Route path="downloads" element={<Downloads />} />
               <Route path="addresses" element={<Addresses />} />
               <Route path="account-details" element={<AccountDetails />} />
