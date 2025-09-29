@@ -647,9 +647,8 @@ const ProductPage = () => {
                 )}
               </div>
               
-              {/* Related Products Section */}
               <RelatedProducts 
-                categoryId={product.categories?.[0]?.slug} 
+                categorySlug={product.categories?.[0]?.slug} 
                 currentProductId={product.id} 
               />
             </div>
