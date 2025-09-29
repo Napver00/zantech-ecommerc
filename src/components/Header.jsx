@@ -43,7 +43,9 @@ const Header = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('main');
   const { cartCount } = useCart();
-  const { user, logout, isAuthSheetOpen, setIsAuthSheetOpen } = useAuth();
+  const { user, userInfo, logout, isAuthSheetOpen, setIsAuthSheetOpen } = useAuth(); // Get userInfo from context
+
+  const wishlistCount = userInfo?.total_wishlist || 0;
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -460,9 +462,16 @@ const Header = () => {
             {/* Action Buttons */}
             <div className="flex items-center space-x-2">
               {/* Wishlist */}
-              <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 transition-colors duration-200 group">
-                <Heart className="text-gray-600 group-hover:text-blue-600 transition-colors duration-200" />
-              </Button>
+              <Link to="/dashboard/wishlist">
+                <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 transition-colors duration-200 group">
+                  <Heart className="text-gray-600 group-hover:text-blue-600 transition-colors duration-200" />
+                  {user && wishlistCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
 
               {/* Cart */}
               <Sheet>

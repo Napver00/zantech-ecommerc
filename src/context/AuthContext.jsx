@@ -15,18 +15,50 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
   const [isAuthSheetOpen, setIsAuthSheetOpen] = useState(false);
+
+  const fetchUserInfo = async (authToken) => {
+    try {
+      const response = await fetch(`${config.baseURL}/users/info`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (!response.ok) throw new Error('Could not fetch user info.');
+      const data = await response.json();
+      if (data.success) setUserInfo(data.data);
+    } catch (err) {
+      console.error("Failed to fetch user info:", err);
+    }
+  };
+
+  const fetchWishlist = async (authToken) => {
+    try {
+        const response = await fetch(`${config.baseURL}/wishlist?limit=1000`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+            const wishlistProductIds = data.data.map(item => item.product_id);
+            setWishlist(wishlistProductIds);
+        }
+    } catch (err) {
+        console.error("Failed to fetch wishlist:", err);
+    }
+  };
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
     if (storedToken && storedUser) {
+      const parsedUser = JSON.parse(storedUser);
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      // You might want to fetch the user's wishlist here as well
+      setUser(parsedUser);
+      fetchUserInfo(storedToken);
+      fetchWishlist(storedToken); // Fetch wishlist on initial load
     }
   }, []);
 
@@ -55,6 +87,10 @@ export const AuthProvider = ({ children }) => {
       setToken(data.data.token);
       localStorage.setItem("token", data.data.token);
       localStorage.setItem("user", JSON.stringify(loggedInUser));
+      
+      await fetchUserInfo(data.data.token);
+      await fetchWishlist(data.data.token); // Fetch wishlist after login
+
       setIsAuthSheetOpen(false); 
 
       toast.success("Welcome back!", {
@@ -162,6 +198,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setWishlist((prev) => [...prev, productId]);
+      await fetchUserInfo(token);
 
       toast.success("Added to wishlist", {
         description: "Product saved to your wishlist",
@@ -183,7 +220,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    setWishlist([]);
+    setUserInfo(null);
+    setWishlist([]); // Clear wishlist on logout
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
@@ -196,6 +234,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     token,
+    userInfo,
     loading,
     error,
     login,

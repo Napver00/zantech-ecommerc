@@ -24,12 +24,15 @@ const ProductCard = ({ product }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (wishlist.includes(product.id)) {
+    // Safely check if wishlist exists and is an array before using .includes()
+    if (Array.isArray(wishlist) && wishlist.includes(product.id)) {
       setIsWishlisted(true);
+    } else {
+      setIsWishlisted(false);
     }
   }, [wishlist, product.id]);
 
-  const hasDiscount = Number(discount) > 0;
+  const hasDiscount = Number(discount) > 0 || (discountedPrice && discountedPrice < price);
   const finalPrice = hasDiscount ? discountedPrice ?? price : price;
   const savings = hasDiscount ? price - finalPrice : 0;
 
@@ -54,8 +57,6 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // DON'T check for user here - let AuthContext handle it
-    // This prevents duplicate error messages
     if (isWishlisted) {
       toast.info("Already in wishlist", {
         description: "This item is already in your wishlist",
@@ -64,7 +65,6 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    // Call addToWishlist - it will show the toast if user is not logged in
     const result = await addToWishlist(product.id);
     if (result.success) {
       setIsWishlisted(true);
@@ -87,7 +87,7 @@ const ProductCard = ({ product }) => {
         <div className="absolute top-3 left-3 z-10">
           <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
             <Zap className="w-3 h-3" />
-            {discountPercentage ? `-${discountPercentage}%` : "Sale"}
+            {discountPercentage ? `-${Math.round(discountPercentage)}%` : "Sale"}
           </div>
         </div>
       )}
