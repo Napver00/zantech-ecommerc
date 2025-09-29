@@ -41,6 +41,7 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [activeMobileTab, setActiveMobileTab] = useState('main');
   const { cartCount } = useCart();
   const { user, logout, isAuthSheetOpen, setIsAuthSheetOpen } = useAuth();
 
@@ -514,169 +515,206 @@ const Header = () => {
                     <Menu className="text-gray-600" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[320px] sm:w-[400px] overflow-y-auto">
-                  <nav className="flex flex-col space-y-1 mt-8">
-                    <div className="mb-6">
-                      <img src="/zantech-logo.webp" alt="ZANTech" className="h-10" />
+                <SheetContent className="w-[320px] sm:w-[400px] overflow-y-auto p-0">
+                  {/* Tabs Header */}
+                  <div className="sticky top-0 bg-white border-b border-gray-200 z-10">
+                    <div className="p-4">
+                      <img src="/zantech-logo.webp" alt="ZANTech" className="h-10 mb-4" />
                     </div>
                     
-                    {/* User Info - Mobile */}
-                    {user && (
-                      <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-                        <p className="text-sm font-medium text-gray-900">Welcome back!</p>
-                        <p className="text-xs text-gray-600 mt-1">{user.email || user.name}</p>
-                      </div>
-                    )}
-                    
-                    {/* Mobile Search */}
-                    <form onSubmit={handleSearch} className="relative mb-6">
-                      <Input 
-                        type="search" 
-                        placeholder="Search products..." 
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}
-                        className="pr-10 rounded-lg border-gray-200" 
-                      />
-                      <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
-                        {isSearching ? (
-                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                          <Search className="h-4 w-4 text-gray-400" />
+                    {/* Tab Buttons */}
+                    <div className="flex border-b border-gray-200">
+                      <button
+                        onClick={() => setActiveMobileTab('main')}
+                        className={cn(
+                          "flex-1 py-3 px-4 text-sm font-semibold transition-colors",
+                          activeMobileTab === 'main'
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-600 hover:text-gray-900"
                         )}
+                      >
+                        Main tab
                       </button>
-                    </form>
-
-                    {/* Mobile Navigation Links */}
-                    <Link 
-                      to="/shop" 
-                      className={cn(
-                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
-                        location.pathname === '/shop' 
-                          ? "text-blue-600 bg-blue-50" 
-                          : "text-gray-700 hover:bg-gray-50"
-                      )}
-                    >
-                      SHOP
-                    </Link>
-
-                    {/* Categories Section - Mobile */}
-                    <div className="space-y-1">
-                      <div className="font-semibold py-3 px-4 text-gray-900">CATEGORIES</div>
-                      {isLoading ? (
-                        <div className="py-2 px-8 text-sm text-gray-500">Loading categories...</div>
-                      ) : categories.length > 0 ? (
-                        <div className="max-h-64 overflow-y-auto">
-                          {categories.map((category) => (
-                            <Link 
-                              key={category.id}
-                              to={`/shop?category_slug=${category.slug}`}
-                              className={cn(
-                                "py-2 px-8 rounded-lg transition-colors duration-200 block",
-                                location.pathname === '/shop' && location.search.includes(`category_slug=${category.slug}`)
-                                  ? "text-blue-600 bg-blue-50 font-medium" 
-                                  : "text-gray-600 hover:bg-gray-50"
-                              )}
-                            >
-                              {category.name}
-                            </Link>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="py-2 px-8 text-sm text-gray-500">No categories available</div>
-                      )}
-                    </div>
-
-                    {/* Resources Section - Mobile */}
-                    <div className="space-y-1">
-                      <div className="font-semibold py-3 px-4 text-gray-900">RESOURCES</div>
-                      <Link 
-                        to="/blog" 
+                      <button
+                        onClick={() => setActiveMobileTab('category')}
                         className={cn(
-                          "py-2 px-8 rounded-lg transition-colors duration-200 block",
-                          location.pathname === '/blog' 
-                            ? "text-blue-600 bg-blue-50 font-medium" 
-                            : "text-gray-600 hover:bg-gray-50"
+                          "flex-1 py-3 px-4 text-sm font-semibold transition-colors",
+                          activeMobileTab === 'category'
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-600 hover:text-gray-900"
                         )}
                       >
-                        Blog
-                      </Link>
-                      <Link 
-                        to="/tutorials" 
-                        className={cn(
-                          "py-2 px-8 rounded-lg transition-colors duration-200 block",
-                          location.pathname === '/tutorials' 
-                            ? "text-blue-600 bg-blue-50 font-medium" 
-                            : "text-gray-600 hover:bg-gray-50"
+                        Category tab
+                      </button>
+                    </div>
+                  </div>
+
+                  <nav className="flex flex-col space-y-1 p-4">
+                    {activeMobileTab === 'main' ? (
+                      <>
+                        {/* User Info - Mobile */}
+                        {user && (
+                          <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                            <p className="text-sm font-medium text-gray-900">Welcome back!</p>
+                            <p className="text-xs text-gray-600 mt-1">{user.email || user.name}</p>
+                          </div>
                         )}
-                      >
-                        Tutorials
-                      </Link>
-                    </div>
+                        
+                        {/* Mobile Search */}
+                        <form onSubmit={handleSearch} className="relative mb-6">
+                          <Input 
+                            type="search" 
+                            placeholder="Search products..." 
+                            value={searchQuery}
+                            onChange={handleSearchInputChange}
+                            className="pr-10 rounded-lg border-gray-200" 
+                          />
+                          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {isSearching ? (
+                              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <Search className="h-4 w-4 text-gray-400" />
+                            )}
+                          </button>
+                        </form>
 
-                    <Link 
-                      to="/about" 
-                      className={cn(
-                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
-                        location.pathname === '/about' 
-                          ? "text-blue-600 bg-blue-50" 
-                          : "text-gray-700 hover:bg-gray-50"
-                      )}
-                    >
-                      ABOUT
-                    </Link>
-
-                    <Link 
-                      to="/contact" 
-                      className={cn(
-                        "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
-                        location.pathname === '/contact' 
-                          ? "text-blue-600 bg-blue-50" 
-                          : "text-gray-700 hover:bg-gray-50"
-                      )}
-                    >
-                      CONTACT
-                    </Link>
-
-                    <div className="border-t border-gray-200 my-4"></div>
-                    
-                    {/* Legal Links */}
-                    <div className="space-y-1">
-                      <Link to="/terms" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
-                        Terms & Conditions
-                      </Link>
-                      <Link to="/privacy-policy" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
-                        Privacy Policy
-                      </Link>
-                      <Link to="/return-policy" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
-                        Return Policy
-                      </Link>
-                    </div>
-
-                    {/* Mobile Login/Dashboard Button */}
-                    {user ? (
-                      <div className="space-y-2 mt-6">
-                        <Link to="/dashboard">
-                          <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
-                            <User className="mr-2 h-4 w-4" /> Dashboard
-                          </Button>
-                        </Link>
-                        <Button 
-                          onClick={logout}
-                          variant="outline"
-                          className="w-full hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                        {/* SHOP */}
+                        <Link 
+                          to="/shop" 
+                          className={cn(
+                            "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
+                            location.pathname === '/shop' 
+                              ? "text-blue-600 bg-blue-50" 
+                              : "text-gray-700 hover:bg-gray-50"
+                          )}
                         >
-                          <LogOut className="mr-2 h-4 w-4" /> Logout
-                        </Button>
-                      </div>
+                          SHOP
+                        </Link>
+
+                        {/* Resources Section */}
+                        <div className="space-y-1 mt-4">
+                          <div className="font-semibold py-3 px-4 text-gray-900">RESOURCES</div>
+                          <Link 
+                            to="/blog" 
+                            className="py-2 px-8 rounded-lg transition-colors duration-200 block text-gray-600 hover:bg-gray-50"
+                          >
+                            Blog
+                          </Link>
+                          <Link 
+                            to="/tutorials" 
+                            className="py-2 px-8 rounded-lg transition-colors duration-200 block text-gray-600 hover:bg-gray-50"
+                          >
+                            Tutorials
+                          </Link>
+                        </div>
+
+                        {/* ABOUT */}
+                        <Link 
+                          to="/about" 
+                          className={cn(
+                            "font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mt-4",
+                            location.pathname === '/about' 
+                              ? "text-blue-600 bg-blue-50" 
+                              : "text-gray-700 hover:bg-gray-50"
+                          )}
+                        >
+                          ABOUT
+                        </Link>
+
+                        {/* CONTACT */}
+                        <Link 
+                          to="/contact" 
+                          className={cn(
+                            "font-semibold py-3 px-4 rounded-lg transition-colors duration-200",
+                            location.pathname === '/contact' 
+                              ? "text-blue-600 bg-blue-50" 
+                              : "text-gray-700 hover:bg-gray-50"
+                          )}
+                        >
+                          CONTACT
+                        </Link>
+
+                        <div className="border-t border-gray-200 my-4"></div>
+                        
+                        {/* Legal Links */}
+                        <div className="space-y-1">
+                          <Link to="/terms" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
+                            Terms & Conditions
+                          </Link>
+                          <Link to="/privacy-policy" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
+                            Privacy Policy
+                          </Link>
+                          <Link to="/return-policy" className="block text-gray-600 hover:text-blue-600 py-2 px-4 text-sm transition-colors duration-200">
+                            Return Policy
+                          </Link>
+                        </div>
+
+                        {/* Mobile Login/Dashboard Button */}
+                        {user ? (
+                          <div className="space-y-2 mt-6">
+                            <Link to="/dashboard">
+                              <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
+                                <User className="mr-2 h-4 w-4" /> Dashboard
+                              </Button>
+                            </Link>
+                            <Button 
+                              onClick={logout}
+                              variant="outline"
+                              className="w-full hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                            >
+                              <LogOut className="mr-2 h-4 w-4" /> Logout
+                            </Button>
+                          </div>
+                        ) : (
+                          <Sheet open={isAuthSheetOpen} onOpenChange={setIsAuthSheetOpen}>
+                            <SheetTrigger asChild>
+                              <Button className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
+                                <User className="mr-2 h-4 w-4" /> Login
+                              </Button>
+                            </SheetTrigger>
+                            <AuthSheet />
+                          </Sheet>
+                        )}
+                      </>
                     ) : (
-                      <Sheet open={isAuthSheetOpen} onOpenChange={setIsAuthSheetOpen}>
-                        <SheetTrigger asChild>
-                          <Button className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg">
-                            <User className="mr-2 h-4 w-4" /> Login
-                          </Button>
-                        </SheetTrigger>
-                        <AuthSheet />
-                      </Sheet>
+                      <>
+                        {/* Category Tab - Only Categories */}
+                        <div className="space-y-1">
+                          {isLoading ? (
+                            <div className="py-8 text-center text-gray-500">
+                              <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent mx-auto mb-2"></div>
+                              <p className="text-sm">Loading categories...</p>
+                            </div>
+                          ) : categories.length > 0 ? (
+                            <>
+                              <Link 
+                                to="/shop"
+                                className="py-3 px-4 rounded-lg transition-colors duration-200 block font-semibold text-gray-700 hover:bg-gray-50 border-b border-gray-100 mb-2"
+                              >
+                                All Categories
+                              </Link>
+                              {categories.map((category) => (
+                                <Link 
+                                  key={category.id}
+                                  to={`/shop?category_slug=${category.slug}`}
+                                  className={cn(
+                                    "py-3 px-4 rounded-lg transition-colors duration-200 block",
+                                    location.pathname === '/shop' && location.search.includes(`category_slug=${category.slug}`)
+                                      ? "text-blue-600 bg-blue-50 font-semibold" 
+                                      : "text-gray-700 hover:bg-gray-50"
+                                  )}
+                                >
+                                  {category.name}
+                                </Link>
+                              ))}
+                            </>
+                          ) : (
+                            <div className="py-8 text-center text-gray-500">
+                              <p className="text-sm">No categories available</p>
+                            </div>
+                          )}
+                        </div>
+                      </>
                     )}
                   </nav>
                 </SheetContent>
