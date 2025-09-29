@@ -1,55 +1,323 @@
-import React from 'react';
-import { User } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { config } from '../../config';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Button } from '../../components/ui/button';
+import { Alert, AlertDescription } from '../../components/ui/alert';
 
 const AccountDetails = () => {
-    const { user } = useAuth();
-  return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-        <User className="h-6 w-6 text-blue-600" />
-        Account Details
-      </h2>
-      <form className="space-y-6 max-w-lg">
+    const { user, token } = useAuth();
+    
+    const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [infoError, setInfoError] = useState('');
+    const [infoSuccess, setInfoSuccess] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState('');
+
+    const [userInfo, setUserInfo] = useState({
+        name: user?.name || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        address: user?.address || ''
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        current_password: '',
+        new_password: '',
+        new_password_confirmation: ''
+    });
+
+    const handleInfoChange = (e) => {
+        const { name, value } = e.target;
+        setUserInfo(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdateInfo = async (e) => {
+        e.preventDefault();
+        setInfoError('');
+        setInfoSuccess('');
+        setIsUpdatingInfo(true);
+
+        // Validation
+        if (!userInfo.name.trim()) {
+            setInfoError('Name is required.');
+            setIsUpdatingInfo(false);
+            return;
+        }
+        if (!userInfo.email.trim()) {
+            setInfoError('Email is required.');
+            setIsUpdatingInfo(false);
+            return;
+        }
+        if (!userInfo.phone.trim()) {
+            setInfoError('Phone number is required.');
+            setIsUpdatingInfo(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.baseURL}/update-user-info`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(userInfo)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setInfoSuccess('Account details updated successfully!');
+                // Update local storage with new user data
+                const updatedUser = { ...user, ...userInfo };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setTimeout(() => setInfoSuccess(''), 5000);
+            } else {
+                setInfoError(data.message || 'Failed to update account details.');
+            }
+        } catch (err) {
+            setInfoError('An error occurred. Please try again.');
+        } finally {
+            setIsUpdatingInfo(false);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        setPasswordError('');
+        setPasswordSuccess('');
+
+        // Validation
+        if (!passwordData.current_password) {
+            setPasswordError('Current password is required.');
+            return;
+        }
+        if (!passwordData.new_password) {
+            setPasswordError('New password is required.');
+            return;
+        }
+        if (passwordData.new_password.length < 8) {
+            setPasswordError('New password must be at least 8 characters.');
+            return;
+        }
+        if (passwordData.new_password !== passwordData.new_password_confirmation) {
+            setPasswordError('New passwords do not match.');
+            return;
+        }
+
+        setIsChangingPassword(true);
+
+        try {
+            const response = await fetch(`${config.baseURL}/change-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(passwordData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setPasswordSuccess('Password changed successfully!');
+                setPasswordData({
+                    current_password: '',
+                    new_password: '',
+                    new_password_confirmation: ''
+                });
+                setTimeout(() => setPasswordSuccess(''), 5000);
+            } else {
+                setPasswordError(data.message || 'Failed to change password.');
+            }
+        } catch (err) {
+            setPasswordError('An error occurred. Please try again.');
+        } finally {
+            setIsChangingPassword(false);
+        }
+    };
+
+    return (
         <div>
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" defaultValue={user.name} className="mt-2" />
-        </div>
-         <div>
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue={user.email} className="mt-2" />
-        </div>
-        <div>
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" defaultValue={user.phone} className="mt-2" />
-        </div>
-        <fieldset className="border border-gray-200 p-4 rounded-lg">
-            <legend className="text-lg font-semibold px-2">Password change</legend>
-            <div className="space-y-4 mt-2">
-                <div>
-                    <Label htmlFor="current_password">Current password (leave blank to leave unchanged)</Label>
-                    <Input id="current_password" type="password" className="mt-2"/>
+            {/* Header */}
+            <div className="mb-6 pb-4 border-b border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <User className="h-6 w-6 text-blue-600" />
+                    Account Details
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">Update your personal information and password</p>
+            </div>
+
+            <div className="space-y-8">
+                {/* Personal Information Form */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                    
+                    {infoSuccess && (
+                        <Alert className="mb-4 border-green-400 bg-green-50">
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                            <AlertDescription className="text-green-800">{infoSuccess}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    {infoError && (
+                        <Alert variant="destructive" className="mb-4">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{infoError}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <form onSubmit={handleUpdateInfo} className="space-y-4 max-w-lg">
+                        <div>
+                            <Label htmlFor="name">Full Name *</Label>
+                            <Input 
+                                id="name" 
+                                name="name"
+                                value={userInfo.name} 
+                                onChange={handleInfoChange}
+                                className="mt-1.5" 
+                                required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="email">Email Address *</Label>
+                            <Input 
+                                id="email" 
+                                name="email"
+                                type="email" 
+                                value={userInfo.email} 
+                                onChange={handleInfoChange}
+                                className="mt-1.5" 
+                                required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="phone">Phone Number *</Label>
+                            <Input 
+                                id="phone" 
+                                name="phone"
+                                type="tel" 
+                                value={userInfo.phone} 
+                                onChange={handleInfoChange}
+                                className="mt-1.5" 
+                                required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="address">Address</Label>
+                            <Input 
+                                id="address" 
+                                name="address"
+                                value={userInfo.address} 
+                                onChange={handleInfoChange}
+                                placeholder="Enter your address"
+                                className="mt-1.5"
+                            />
+                        </div>
+                        <div className="pt-2">
+                            <Button 
+                                type="submit"
+                                disabled={isUpdatingInfo}
+                                className="bg-blue-600 hover:bg-blue-700"
+                            >
+                                {isUpdatingInfo ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                        Updating...
+                                    </>
+                                ) : (
+                                    'Save Changes'
+                                )}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
-                 <div>
-                    <Label htmlFor="new_password">New password (leave blank to leave unchanged)</Label>
-                    <Input id="new_password" type="password" className="mt-2"/>
-                </div>
-                 <div>
-                    <Label htmlFor="confirm_password">Confirm new password</Label>
-                    <Input id="confirm_password" type="password" className="mt-2"/>
+
+                {/* Password Change Form */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
+                    
+                    {passwordSuccess && (
+                        <Alert className="mb-4 border-green-400 bg-green-50">
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                            <AlertDescription className="text-green-800">{passwordSuccess}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    {passwordError && (
+                        <Alert variant="destructive" className="mb-4">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{passwordError}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <form onSubmit={handleChangePassword} className="space-y-4 max-w-lg">
+                        <div>
+                            <Label htmlFor="current_password">Current Password *</Label>
+                            <Input 
+                                id="current_password" 
+                                name="current_password"
+                                type="password" 
+                                value={passwordData.current_password}
+                                onChange={handlePasswordChange}
+                                className="mt-1.5"
+                                placeholder="Enter current password"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="new_password">New Password *</Label>
+                            <Input 
+                                id="new_password" 
+                                name="new_password"
+                                type="password" 
+                                value={passwordData.new_password}
+                                onChange={handlePasswordChange}
+                                className="mt-1.5"
+                                placeholder="Enter new password (min 8 characters)"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="new_password_confirmation">Confirm New Password *</Label>
+                            <Input 
+                                id="new_password_confirmation" 
+                                name="new_password_confirmation"
+                                type="password" 
+                                value={passwordData.new_password_confirmation}
+                                onChange={handlePasswordChange}
+                                className="mt-1.5"
+                                placeholder="Re-enter new password"
+                            />
+                        </div>
+                        <div className="pt-2">
+                            <Button 
+                                type="submit"
+                                disabled={isChangingPassword}
+                                className="bg-blue-600 hover:bg-blue-700"
+                            >
+                                {isChangingPassword ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                        Changing...
+                                    </>
+                                ) : (
+                                    'Change Password'
+                                )}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </fieldset>
-        <div>
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">Save changes</Button>
         </div>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default AccountDetails;
-
