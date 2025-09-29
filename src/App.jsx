@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import ProductPage from './pages/ProductPage';
 import Shop from './pages/Shop';
 import Checkout from './pages/Checkout';
+import Faq from './pages/Faq'; // <-- New Import
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -37,10 +38,10 @@ function App() {
             <Route path="/privacy-policy" element={<Privacy />} />
             <Route path="/return-policy" element={<ReturnPolicy />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<Faq />} /> {/* <-- New Route */}
             <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/checkout" element={<Checkout />} />
             
-            {/* New Dashboard Routes */}
             <Route 
               path="/dashboard"
               element={

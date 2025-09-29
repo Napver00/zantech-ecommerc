@@ -205,6 +205,16 @@ const Footer = () => {
                     </span>
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/faq"
+                    className="text-gray-300 hover:text-blue-300 transition-colors duration-200 flex items-center group"
+                  >
+                    <span className="group-hover:translate-x-1 transition-transform duration-200">
+                      FAQ
+                    </span>
+                  </a>
+                </li>
               </ul>
             </div>
 
