@@ -514,7 +514,7 @@ const Header = () => {
                     <Menu className="text-gray-600" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[320px] sm:w-[400px]">
+                <SheetContent className="w-[320px] sm:w-[400px] overflow-y-auto">
                   <nav className="flex flex-col space-y-1 mt-8">
                     <div className="mb-6">
                       <img src="/zantech-logo.webp" alt="ZANTech" className="h-10" />
@@ -558,6 +558,33 @@ const Header = () => {
                     >
                       SHOP
                     </Link>
+
+                    {/* Categories Section - Mobile */}
+                    <div className="space-y-1">
+                      <div className="font-semibold py-3 px-4 text-gray-900">CATEGORIES</div>
+                      {isLoading ? (
+                        <div className="py-2 px-8 text-sm text-gray-500">Loading categories...</div>
+                      ) : categories.length > 0 ? (
+                        <div className="max-h-64 overflow-y-auto">
+                          {categories.map((category) => (
+                            <Link 
+                              key={category.id}
+                              to={`/shop?category_slug=${category.slug}`}
+                              className={cn(
+                                "py-2 px-8 rounded-lg transition-colors duration-200 block",
+                                location.pathname === '/shop' && location.search.includes(`category_slug=${category.slug}`)
+                                  ? "text-blue-600 bg-blue-50 font-medium" 
+                                  : "text-gray-600 hover:bg-gray-50"
+                              )}
+                            >
+                              {category.name}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="py-2 px-8 text-sm text-gray-500">No categories available</div>
+                      )}
+                    </div>
 
                     {/* Resources Section - Mobile */}
                     <div className="space-y-1">
