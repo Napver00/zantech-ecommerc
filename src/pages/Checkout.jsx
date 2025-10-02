@@ -488,7 +488,7 @@ const Checkout = () => {
                                             <AlertCircle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900">Payment Instructions</p>
-                                                <p className="text-xs text-gray-600 mt-1">Send money to <strong>01xxxxxxxxx</strong> and enter details below</p>
+                                                <p className="text-xs text-gray-600 mt-1">Send money to <strong>01627199815</strong> and enter details below</p>
                                             </div>
                                         </div>
                                         <div>
