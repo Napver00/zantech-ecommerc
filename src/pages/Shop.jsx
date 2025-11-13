@@ -22,13 +22,14 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import Seo from '@/components/Seo'; 
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid'); 
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -353,6 +354,15 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      {/*  SEO for Shop page */}
+      <Seo
+        title="Shop Robotics & IoT Components Online - Zantech Store"
+        description="Browse and buy robotics kits, Arduino, ESP32, sensors, modules, and IoT components from Zantech Store. Fast delivery across Bangladesh for students, makers, and engineers."
+        url="https://store.zantechbd.com/shop"
+        type="website"
+        keywords="Zantech shop, buy Arduino Bangladesh, robotics components BD, IoT sensors online, ESP32 modules, electronics shop Bangladesh, ZAN Tech store"
+      />
+
       <Header />
 
       <main className="flex-1">
@@ -547,7 +557,7 @@ const Shop = () => {
                     </div>
 
                     {/* Results Count */}
-                    {!isLoading && (
+                    {!isLoading && pagination.total > 0 && (
                       <span className="text-sm text-gray-600">
                         Showing {((pagination.current_page - 1) * pagination.per_page) + 1}-{Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total.toLocaleString()} products
                       </span>

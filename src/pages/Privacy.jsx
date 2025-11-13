@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { config } from "@/config";
 import { Shield, AlertTriangle, FileText, Clock } from "lucide-react";
+import Seo from "@/components/Seo";
 
 const Privacy = () => {
   const [content, setContent] = useState("");
@@ -84,6 +85,15 @@ const Privacy = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/*  SEO for Privacy page */}
+      <Seo
+        title="Privacy Policy - Zantech Store"
+        description="Read the Zantech Store privacy policy to understand how we collect, use, and protect your personal data when you shop for robotics, IoT, and electronics products in Bangladesh."
+        url="https://store.zantechbd.com/privacy-policy"
+        type="article"
+        keywords="Zantech Store privacy policy, data protection Bangladesh, customer data security, personal information policy, robotics store privacy, IoT store privacy"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}

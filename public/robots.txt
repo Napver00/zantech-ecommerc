@@ -1,0 +1,23 @@
+# Allow everything by default
+Allow: /
+
+# Block private / user-only areas
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /login
+Disallow: /register
+Disallow: /account
+Disallow: /orders
+Disallow: /downloads
+Disallow: /addresses
+
+# Block backend/API endpoints (if publicly reachable)
+Disallow: /admin
+Disallow: /api/
+Disallow: /storage/
+Disallow: /vendor/
+
+# Sitemap
+Sitemap: https://store.zantechbd.com/sitemap.xml

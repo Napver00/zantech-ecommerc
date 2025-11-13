@@ -21,9 +21,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import RelatedProducts from "@/components/RelatedProducts";
+import Seo from "@/components/Seo";
 
 const Gallery = ({ images = [], alt = "" }) => {
   const imgs = Array.isArray(images)
@@ -220,7 +221,7 @@ const BundleItems = ({ bundleItems }) => {
           <p className="text-gray-600">Click on any item to view its details</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {bundleItems.map((item) => (
           <a
@@ -233,7 +234,7 @@ const BundleItems = ({ bundleItems }) => {
                 {item.bundle_quantity}
               </div>
             )}
-            
+
             <div className="aspect-square bg-white rounded-lg overflow-hidden mb-3 flex items-center justify-center p-2">
               <img
                 src={item.image}
@@ -241,12 +242,12 @@ const BundleItems = ({ bundleItems }) => {
                 className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            
+
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
                 {item.name}
               </h3>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {item.discountedPrice ? (
@@ -264,10 +265,10 @@ const BundleItems = ({ bundleItems }) => {
                     </span>
                   )}
                 </div>
-                
+
                 <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
               </div>
-              
+
               {item.discountPercentage && (
                 <div className="flex items-center">
                   <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">
@@ -279,11 +280,13 @@ const BundleItems = ({ bundleItems }) => {
           </a>
         ))}
       </div>
-      
+
       <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
         <div className="flex items-center gap-2 mb-2">
           <Package className="h-5 w-5 text-emerald-600" />
-          <span className="font-semibold text-emerald-900">Bundle Benefits:</span>
+          <span className="font-semibold text-emerald-900">
+            Bundle Benefits:
+          </span>
         </div>
         <ul className="text-sm text-emerald-800 space-y-1">
           <li>• All components work together seamlessly</li>
@@ -303,8 +306,12 @@ const ProductPage = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
-  const { user, addToWishlist, wishlist } = useAuth(); // Get auth context
+  const { user, addToWishlist, wishlist } = useAuth();
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Base site URL for SEO
+  const siteUrl = "https://store.zantechbd.com";
+  const productUrl = `${siteUrl}/product/${slug}`;
 
   // Check if product is in wishlist
   useEffect(() => {
@@ -312,7 +319,7 @@ const ProductPage = () => {
       setIsWishlisted(wishlist.includes(product.id));
     }
   }, [product, wishlist]);
-  
+
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, quantity);
@@ -332,7 +339,7 @@ const ProductPage = () => {
       });
       return;
     }
-    
+
     const result = await addToWishlist(product.id);
     if (result.success) {
       setIsWishlisted(true);
@@ -384,8 +391,52 @@ const ProductPage = () => {
     setQuantity(newQuantity);
   };
 
+  // ✅ SEO data from product
+  const seoImage =
+    product && product.image
+      ? product.image.startsWith("http")
+        ? product.image
+        : `${siteUrl}${product.image.startsWith("/") ? "" : "/"}${
+            product.image
+          }`
+      : `${siteUrl}/zantech-logo.webp`;
+
+  const seoDescription =
+    product?.short_description ||
+    product?.description ||
+    product?.name ||
+    "";
+
+  const seoProductMeta =
+    product && product.price
+      ? {
+          price: product.discountedPrice ?? product.price,
+          currency: "BDT",
+          availability: product.quantity > 0 ? "in stock" : "out of stock",
+          condition: "new",
+          brand: product.brand || "Zantech Store",
+        }
+      : null;
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* ✅ SEO for this product */}
+      {product && (
+        <Seo
+          title={`${product.name} | Zantech Store`}
+          description={seoDescription}
+          image={seoImage}
+          url={productUrl}
+          type="product"
+          product={seoProductMeta}
+          keywords={
+            product.categories?.[0]?.name
+              ? `${product.categories[0].name}, Zantech, Robotics, IoT, Electronics`
+              : undefined
+          }
+        />
+      )}
+
       <Header />
       <main className="flex-grow">
         {loading ? (
@@ -650,16 +701,20 @@ const ProductPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                      <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900">No Reviews Yet</h3>
-                      <p className="text-gray-600 mt-1">Be the first to share your thoughts on this product!</p>
+                    <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900">
+                      No Reviews Yet
+                    </h3>
+                    <p className="text-gray-600 mt-1">
+                      Be the first to share your thoughts on this product!
+                    </p>
                   </div>
                 )}
               </div>
-              
-              <RelatedProducts 
-                categorySlug={product.categories?.[0]?.slug} 
-                currentProductId={product.id} 
+
+              <RelatedProducts
+                categorySlug={product.categories?.[0]?.slug}
+                currentProductId={product.id}
               />
             </div>
           </div>

@@ -4,8 +4,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, Calendar, ArrowLeft, User, Eye, Share2 } from 'lucide-react';
+import { AlertTriangle, Calendar, ArrowLeft, User, Share2 } from 'lucide-react';
 import DOMPurify from 'dompurify';
+import Seo from '@/components/Seo'; 
 
 const PostDetails = () => {
   const { id } = useParams();
@@ -151,11 +152,50 @@ const PostDetails = () => {
 
   if (!post) return null;
 
+  // SEO helpers
+  const siteUrl = "https://store.zantechbd.com";
+  const postUrl = `${siteUrl}/postdetails/${id}`;
+
+  // Plain text excerpt from HTML content (for meta description)
+  const getDescriptionFromHtml = (html, maxLength = 160) => {
+    if (!html) return "";
+    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  const seoTitle = `${post.title} | Zantech Blog`;
+  const seoDescription = getDescriptionFromHtml(post.content || post.excerpt || post.title);
+  const seoImage = post.thumbnail_url
+    ? (post.thumbnail_url.startsWith("http")
+        ? post.thumbnail_url
+        : `${siteUrl}${post.thumbnail_url.startsWith("/") ? "" : "/"}${post.thumbnail_url}`)
+    : `${siteUrl}/zantech-logo.webp`;
+
+  const seoKeywords = [
+    post.category,
+    ...(Array.isArray(post.tags) ? post.tags : []),
+    "Zantech",
+    "Blog",
+    "Tutorial"
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   const backLink = post.category?.toLowerCase().includes('tutorial') ? '/tutorials' : '/blog';
   const backText = post.category?.toLowerCase().includes('tutorial') ? 'Tutorials' : 'Blog';
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/*  SEO for this article */}
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        image={seoImage}
+        url={postUrl}
+        type="article"
+        keywords={seoKeywords}
+      />
+
       <Header />
       
       <main className="flex-grow">

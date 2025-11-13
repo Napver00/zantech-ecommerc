@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { config } from '@/config';
 import { MapPin, Phone, Mail, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import Seo from '@/components/Seo'; 
 
 const Contact = () => {
   const [form, setForm] = useState({ f_name: '', l_name: '', email: '', project_type: '', message: '' });
@@ -61,6 +62,15 @@ const Contact = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/*  SEO for Contact page */}
+      <Seo
+        title="Contact Zantech Store - Robotics & IoT Support in Bangladesh"
+        description="Get in touch with Zantech Store for product queries, orders, technical support, or project consultation in robotics, IoT, and electronics across Bangladesh."
+        url="https://store.zantechbd.com/contact"
+        type="website"
+        keywords="Contact Zantech, Zantech Store contact, robotics support Bangladesh, IoT support BD, electronics shop Dhaka contact"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}
@@ -234,7 +244,7 @@ const Contact = () => {
                     name="project_type"
                     value={form.project_type}
                     onChange={handleChange}
-                    placeholder="e.g., product, equipment problem, Consulting"
+                    placeholder="e.g., product, equipment problem, consulting"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   />
                 </div>

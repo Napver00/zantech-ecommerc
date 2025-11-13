@@ -4,7 +4,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { config } from '@/config';
-import { RotateCcw, AlertTriangle, Clock, Shield, Package, HeartHandshake } from 'lucide-react';
+import { RotateCcw, AlertTriangle, Clock, Package, HeartHandshake } from 'lucide-react';
+import Seo from '@/components/Seo'; 
 
 const ReturnPolicy = () => {
   const [content, setContent] = useState('');
@@ -78,6 +79,15 @@ const ReturnPolicy = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-green-50">
+      {/*  SEO for Return Policy page */}
+      <Seo
+        title="Return Policy - Zantech Store"
+        description="Read the Zantech Store return policy to learn how refunds, exchanges, and product returns are handled for robotics, IoT, and electronics orders in Bangladesh."
+        url="https://store.zantechbd.com/return-policy"
+        type="article"
+        keywords="Zantech Store return policy, refund policy Bangladesh, product returns robotics, IoT store returns, electronics return policy"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}
@@ -154,7 +164,7 @@ const ReturnPolicy = () => {
                   <span className="text-blue-600 font-bold">4</span>
                 </div>
                 <h3 className="font-medium text-gray-900 mb-2">Get Refund</h3>
-                <p className="text-sm text-gray-600">Receive your refund within 5-7 business days.</p>
+                <p className="text-sm text-gray-600">Receive your refund within 5–7 business days.</p>
               </div>
             </div>
           </div>

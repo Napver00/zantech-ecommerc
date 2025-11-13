@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {HelmetProvider } from 'react-helmet-async';
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
@@ -29,7 +30,8 @@ import Wishlist from "./pages/Dashboard/Wishlist";
 
 function App() {
   return (
-    <AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
       <CartProvider>
         <BrowserRouter>
           <Routes>
@@ -83,6 +85,8 @@ function App() {
         />
       </CartProvider>
     </AuthProvider>
+    </HelmetProvider>
+    
   );
 }
 

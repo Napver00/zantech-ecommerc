@@ -5,6 +5,7 @@ import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { HelpCircle, AlertTriangle } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
@@ -52,6 +53,15 @@ const Faq = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      {/*  SEO for FAQ page */}
+      <Seo
+        title="FAQ - Zantech Store | Frequently Asked Questions"
+        description="Find answers to common questions about orders, shipping, payment, returns, and robotics & IoT products at Zantech Store in Bangladesh."
+        url="https://store.zantechbd.com/faq"
+        type="website"
+        keywords="Zantech FAQ, Zantech Store FAQ, robotics FAQ Bangladesh, IoT store questions, order help, shipping FAQ, return policy questions"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}
@@ -69,40 +79,40 @@ const Faq = () => {
 
         {/* FAQ Content */}
         <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg p-8 md:p-10 border border-gray-100">
-                {loading && renderSkeletons()}
+          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-10 border border-gray-100">
+            {loading && renderSkeletons()}
 
-                {!loading && error && (
-                    <div className="text-center py-8 text-red-600">
-                        <AlertTriangle className="h-10 w-10 mx-auto mb-4" />
-                        <p className="font-semibold">Error loading FAQs</p>
-                        <p className="text-sm">{error}</p>
-                    </div>
-                )}
+            {!loading && error && (
+              <div className="text-center py-8 text-red-600">
+                <AlertTriangle className="h-10 w-10 mx-auto mb-4" />
+                <p className="font-semibold">Error loading FAQs</p>
+                <p className="text-sm">{error}</p>
+              </div>
+            )}
 
-                {!loading && !error && faqs.length > 0 && (
-                    <Accordion type="single" collapsible className="w-full">
-                        {faqs.map(faq => (
-                            <AccordionItem key={faq.id} value={`item-${faq.id}`}>
-                                <AccordionTrigger className="text-lg text-left hover:no-underline">
-                                    {faq.question}
-                                </AccordionTrigger>
-                                <AccordionContent className="text-base text-gray-700 leading-relaxed">
-                                    {faq.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                )}
+            {!loading && !error && faqs.length > 0 && (
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map(faq => (
+                  <AccordionItem key={faq.id} value={`item-${faq.id}`}>
+                    <AccordionTrigger className="text-lg text-left hover:no-underline">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-base text-gray-700 leading-relaxed">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
 
-                {!loading && !error && faqs.length === 0 && (
-                     <div className="text-center py-8 text-gray-500">
-                        <HelpCircle className="h-10 w-10 mx-auto mb-4" />
-                        <p className="font-semibold">No Questions Yet</p>
-                        <p className="text-sm">We're working on adding FAQs. Please check back later.</p>
-                    </div>
-                )}
-            </div>
+            {!loading && !error && faqs.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <HelpCircle className="h-10 w-10 mx-auto mb-4" />
+                <p className="font-semibold">No Questions Yet</p>
+                <p className="text-sm">We're working on adding FAQs. Please check back later.</p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { config } from '@/config';
 import { FileText, AlertTriangle, Scale, Users, Gavel, MessageSquare } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 const Terms = () => {
   const [content, setContent] = useState('');
@@ -78,6 +79,15 @@ const Terms = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
+      {/*  SEO meta */}
+      <Seo
+        title="Terms & Conditions - Zantech Store"
+        description="Read the terms and conditions for using Zantech Store, including account usage, service rules, payments, and legal guidelines for customers."
+        url="https://store.zantechbd.com/terms-and-conditions"
+        type="website"
+        keywords="Zantech terms, Zantech store terms and conditions, user agreement, store policy, legal terms, ZAN Tech"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}

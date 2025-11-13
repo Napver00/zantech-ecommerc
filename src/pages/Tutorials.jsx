@@ -5,7 +5,8 @@ import Footer from '@/components/Footer';
 import PostCard from '@/components/PostCard';
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, GraduationCap, Sparkles, Target, BookOpen, Zap } from 'lucide-react';
+import { AlertTriangle, GraduationCap, Target, Zap } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 const Tutorials = () => {
   const [tutorials, setTutorials] = useState([]);
@@ -40,7 +41,10 @@ const Tutorials = () => {
   const renderSkeletons = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div
+          key={i}
+          className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300"
+        >
           <Skeleton className="h-56 w-full bg-gradient-to-br from-purple-50 to-pink-100" />
           <div className="p-6 space-y-4">
             <Skeleton className="h-6 w-3/4 bg-gray-200" />
@@ -58,17 +62,29 @@ const Tutorials = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
+      {/*  SEO for Tutorials listing page */}
+      <Seo
+        title="Robotics & IoT Tutorials | Zantech Store Bangladesh"
+        description="Step-by-step tutorials on Arduino, ESP32, robotics, IoT and electronics. Learn practical projects, coding, and hardware with Zantech Store’s free tutorials in Bangladesh."
+        url="https://store.zantechbd.com/tutorials"
+        type="article"
+        keywords="Arduino tutorial Bangladesh, ESP32 tutorial, robotics tutorials BD, IoT tutorials, Zantech tutorials, electronics learning"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Learn with <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Tutorials</span>
+            Learn with{' '}
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Tutorials
+            </span>
           </h1>
-          
+
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Master new skills with our comprehensive step-by-step guides. From beginner basics to advanced techniques, we've got you covered.
+            Master new skills with our comprehensive step-by-step guides. From beginner basics to
+            advanced techniques, we've got you covered.
           </p>
 
           {/* Stats or Features */}
@@ -83,7 +99,7 @@ const Tutorials = () => {
                   <p className="text-sm text-gray-600">Tutorials</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-pink-100 rounded-xl">
                   <Target className="h-6 w-6 text-pink-600" />
@@ -132,7 +148,7 @@ const Tutorials = () => {
         {/* Tutorials Grid */}
         {!loading && !error && tutorials.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tutorials.map(tutorial => (
+            {tutorials.map((tutorial) => (
               <PostCard key={tutorial.id} post={tutorial} />
             ))}
           </div>
@@ -147,9 +163,10 @@ const Tutorials = () => {
               </div>
               <h3 className="text-3xl font-bold text-gray-900 mb-4">No Tutorials Yet</h3>
               <p className="text-gray-600 text-lg mb-8">
-                We're creating comprehensive tutorials for you. Check back soon for step-by-step guides and learning materials!
+                We're creating comprehensive tutorials for you. Check back soon for step-by-step
+                guides and learning materials!
               </p>
-              <Link 
+              <Link
                 to="/blog"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >

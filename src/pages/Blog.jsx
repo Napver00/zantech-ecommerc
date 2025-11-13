@@ -5,7 +5,8 @@ import Footer from '../components/Footer';
 import PostCard from '../components/PostCard';
 import { config } from '../config';
 import { Skeleton } from '../components/ui/skeleton';
-import { AlertTriangle, BookOpen, Sparkles, TrendingUp, Calendar } from 'lucide-react';
+import { AlertTriangle, BookOpen, TrendingUp, Calendar } from 'lucide-react';
+import Seo from '../components/Seo';
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
@@ -40,7 +41,10 @@ const Blog = () => {
   const renderSkeletons = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div
+          key={i}
+          className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300"
+        >
           <Skeleton className="h-56 w-full bg-gradient-to-br from-blue-50 to-indigo-100" />
           <div className="p-6 space-y-4">
             <Skeleton className="h-6 w-3/4 bg-gray-200" />
@@ -58,17 +62,29 @@ const Blog = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      {/*  SEO for Blog listing page */}
+      <Seo
+        title="Zantech Blog - Robotics, IoT & Electronics Articles in Bangladesh"
+        description="Read articles from Zantech Store on robotics, Arduino, ESP32, IoT, electronics projects, STEM education and maker culture in Bangladesh."
+        url="https://store.zantechbd.com/blog"
+        type="article"
+        keywords="Zantech blog, robotics blog Bangladesh, Arduino articles, ESP32 articles, IoT blog BD, electronics blog, STEM education Bangladesh"
+      />
+
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Our <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Blog</span>
+            Our{' '}
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Blog
+            </span>
           </h1>
-          
+
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover insights, stories, and expert knowledge from the ZanTech team. Stay updated with the latest trends, tips, and industry news.
+            Discover insights, stories, and expert knowledge from the ZanTech team. Stay updated
+            with the latest trends, tips, and industry news.
           </p>
 
           {/* Stats or Features */}
@@ -83,7 +99,7 @@ const Blog = () => {
                   <p className="text-sm text-gray-600">Articles</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-indigo-100 rounded-xl">
                   <TrendingUp className="h-6 w-6 text-indigo-600" />
@@ -132,7 +148,7 @@ const Blog = () => {
         {/* Posts Grid */}
         {!loading && !error && posts.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map(post => (
+            {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
@@ -147,9 +163,10 @@ const Blog = () => {
               </div>
               <h3 className="text-3xl font-bold text-gray-900 mb-4">No Blog Posts Yet</h3>
               <p className="text-gray-600 text-lg mb-8">
-                We're working on creating amazing content for you. Check back soon for insightful articles and updates!
+                We're working on creating amazing content for you. Check back soon for insightful
+                articles and updates!
               </p>
-              <Link 
+              <Link
                 to="/shop"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
