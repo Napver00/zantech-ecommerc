@@ -109,8 +109,8 @@ const ReturnPolicy = () => {
             <div className="bg-blue-100 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
               <Clock className="h-5 w-5 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">7-Day Returns</h3>
-            <p className="text-sm text-gray-600">Easy returns within 7 days of purchase for most items.</p>
+            <h3 className="font-semibold text-gray-900 mb-2">3-Day Returns</h3>
+            <p className="text-sm text-gray-600">Easy returns within 3 days of purchase for most items.</p>
           </div>
           
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
