@@ -1,3 +1,4 @@
+import React from "react";
 import { Helmet } from "react-helmet-async";
 
 const Seo = ({
@@ -22,9 +23,42 @@ const Seo = ({
 
   const seoTitle = title || defaultTitle;
   const seoDescription = description || defaultDescription;
-  const seoImage = image || defaultImage;
   const seoUrl = url || baseURL;
   const seoKeywords = keywords || defaultKeywords;
+
+  // Make sure og:image is an absolute URL
+  const rawImage = image || defaultImage;
+  const seoImage = rawImage.startsWith("http")
+    ? rawImage
+    : `${baseURL}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
+
+  // Build product schema if product info is passed
+  const productSchema =
+    product &&
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: seoTitle,
+      image: seoImage,
+      description: seoDescription,
+      brand: {
+        "@type": "Brand",
+        name: product.brand || "Zantech Store",
+      },
+      offers: {
+        "@type": "Offer",
+        url: seoUrl,
+        priceCurrency: product.currency || "BDT",
+        price: product.price,
+        availability: `https://schema.org/${
+          product.availability === "in stock" ? "InStock" : "OutOfStock"
+        }`,
+        seller: {
+          "@type": "Organization",
+          name: "Zantech Store",
+        },
+      },
+    });
 
   return (
     <Helmet>
@@ -53,11 +87,11 @@ const Seo = ({
       <meta property="og:locale" content="en_BD" />
 
       {/* Twitter Card */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={seoUrl} />
-      <meta property="twitter:title" content={seoTitle} />
-      <meta property="twitter:description" content={seoDescription} />
-      <meta property="twitter:image" content={seoImage} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={seoUrl} />
+      <meta name="twitter:title" content={seoTitle} />
+      <meta name="twitter:description" content={seoDescription} />
+      <meta name="twitter:image" content={seoImage} />
 
       {/* Geo Tags */}
       <meta name="geo.region" content="BD" />
@@ -66,7 +100,10 @@ const Seo = ({
       {/* Product Specific Meta Tags */}
       {product && (
         <>
-          <meta property="product:price:amount" content={String(product.price)} />
+          <meta
+            property="product:price:amount"
+            content={String(product.price)}
+          />
           <meta
             property="product:price:currency"
             content={product.currency || "BDT"}
@@ -88,32 +125,9 @@ const Seo = ({
           )}
 
           {/* Product Schema for Google */}
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Product",
-              name: title,
-              image: seoImage,
-              description: seoDescription,
-              brand: {
-                "@type": "Brand",
-                name: product.brand || "Zantech Store",
-              },
-              offers: {
-                "@type": "Offer",
-                url: seoUrl,
-                priceCurrency: product.currency || "BDT",
-                price: product.price,
-                availability: `https://schema.org/${
-                  product.availability === "in stock" ? "InStock" : "OutOfStock"
-                }`,
-                seller: {
-                  "@type": "Organization",
-                  name: "Zantech Store",
-                },
-              },
-            })}
-          </script>
+          {productSchema && (
+            <script type="application/ld+json">{productSchema}</script>
+          )}
         </>
       )}
     </Helmet>
