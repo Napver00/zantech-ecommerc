@@ -9,7 +9,37 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
 
+  // 🔹 Handle responsive items per page
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (typeof window === "undefined") return;
+
+      const width = window.innerWidth;
+
+      if (width < 640) {
+        // < sm
+        setItemsPerPage(1);
+      } else if (width < 768) {
+        // sm
+        setItemsPerPage(2);
+      } else if (width < 1024) {
+        // md
+        setItemsPerPage(3);
+      } else {
+        // lg and up
+        setItemsPerPage(4);
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
+  // 🔹 Fetch related products
   useEffect(() => {
     if (!categorySlug) {
       setLoading(false);
@@ -42,6 +72,7 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
                 p.discountPercentage ?? p.discount_percentage ?? null,
             }));
           setProducts(related);
+          setCurrentIndex(0); // reset slider when data changes
         } else {
           setProducts([]);
         }
@@ -56,18 +87,19 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
     fetchRelatedProducts();
   }, [categorySlug, currentProductId]);
 
+  const maxIndex = Math.max(0, products.length - itemsPerPage);
+
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? products.length - 4 : prevIndex - 1
+      prevIndex <= 0 ? maxIndex : prevIndex - 1
     );
   };
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === products.length - 4 ? 0 : prevIndex + 1
+      prevIndex >= maxIndex ? 0 : prevIndex + 1
     );
   };
-
 
   if (loading) {
     return (
@@ -76,7 +108,7 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
           <Compass className="h-6 w-6 text-blue-600" />
           <h2 className="text-2xl font-bold text-gray-900">Related Products</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-xl" />
           ))}
@@ -87,14 +119,16 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
 
   if (error || products.length === 0) return null;
 
+  const canScroll = products.length > itemsPerPage;
+
   return (
     <div className="bg-white rounded-2xl p-8 border border-gray-200">
       <div className="flex items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-            <Compass className="h-6 w-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Related Products</h2>
+          <Compass className="h-6 w-6 text-blue-600" />
+          <h2 className="text-2xl font-bold text-gray-900">Related Products</h2>
         </div>
-        {products.length > 4 && (
+        {canScroll && (
           <div className="flex gap-2">
             <button
               onClick={handlePrev}
@@ -111,14 +145,23 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
           </div>
         )}
       </div>
+
       <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * (100 / 4)}%)` }}
+          style={{
+            transform: `translateX(-${
+              (currentIndex * 100) / itemsPerPage
+            }%)`,
+          }}
         >
           {products.map((p) => (
-            <div key={p.id} className="w-1/4 flex-shrink-0 px-3">
-                <ProductCard product={p} />
+            <div
+              key={p.id}
+              className="flex-shrink-0 px-2 sm:px-3"
+              style={{ width: `${100 / itemsPerPage}%` }}
+            >
+              <ProductCard product={p} />
             </div>
           ))}
         </div>
