@@ -4,13 +4,14 @@ import Footer from '@/components/Footer';
 import { config } from '@/config';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { HelpCircle, AlertTriangle } from 'lucide-react';
+import { HelpCircle, AlertTriangle, Search, MessageCircle, Mail } from 'lucide-react';
 import Seo from '@/components/Seo';
 
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchFaqs = async () => {
@@ -23,7 +24,6 @@ const Faq = () => {
         }
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
-          // Filter for FAQs where the category is 'store'
           const storeFaqs = data.data.filter(faq => faq.category === 'store');
           setFaqs(storeFaqs);
         } else {
@@ -39,79 +39,145 @@ const Faq = () => {
     fetchFaqs();
   }, []);
 
-  const renderSkeletons = () => {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg p-4">
-            <Skeleton className="h-6 w-3/4" />
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const filteredFaqs = faqs.filter(faq => 
+    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const renderSkeletons = () => (
+    <div className="space-y-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="border border-slate-200 rounded-xl p-6 bg-white">
+          <Skeleton className="h-6 w-3/4 mb-4" />
+          <Skeleton className="h-4 w-full" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      {/*  SEO for FAQ page */}
+    <div className="flex flex-col min-h-screen bg-slate-50">
       <Seo
         title="FAQ - Zantech Store | Frequently Asked Questions"
-        description="Find answers to common questions about orders, shipping, payment, returns, and robotics & IoT products at Zantech Store in Bangladesh."
+        description="Find answers to common questions about orders, shipping, payment, returns, and robotics & IoT products at Zantech Store."
         url="https://store.zantechbd.com/faq"
         type="website"
-        keywords="Zantech FAQ, Zantech Store FAQ, robotics FAQ Bangladesh, IoT store questions, order help, shipping FAQ, return policy questions"
       />
 
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-16">
+
+      <main className="flex-grow">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-            <HelpCircle className="h-8 w-8 text-blue-600" />
+        <section className="bg-slate-900 text-white py-20 relative overflow-hidden">
+           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-[50%] -left-[20%] w-[80%] h-[80%] bg-blue-600/10 rounded-full blur-[100px]"></div>
+            <div className="absolute -bottom-[50%] -right-[20%] w-[80%] h-[80%] bg-purple-600/10 rounded-full blur-[100px]"></div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Find answers to common questions about our store and products.
-          </p>
-        </div>
+          
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm mb-6">
+              <HelpCircle className="w-8 h-8 text-blue-400" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+              Frequently Asked Questions
+            </h1>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-10">
+              Have questions? We're here to help. Find answers to the most common questions about our store and products.
+            </p>
+
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                className="block w-full pl-11 pr-4 py-4 bg-white/10 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white/20 transition-all backdrop-blur-sm"
+                placeholder="Search for answers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+        </section>
 
         {/* FAQ Content */}
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-10 border border-gray-100">
-            {loading && renderSkeletons()}
+        <div className="container mx-auto px-4 py-16 -mt-10 relative z-20">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-8 md:p-10 border border-slate-100">
+              {loading && renderSkeletons()}
 
-            {!loading && error && (
-              <div className="text-center py-8 text-red-600">
-                <AlertTriangle className="h-10 w-10 mx-auto mb-4" />
-                <p className="font-semibold">Error loading FAQs</p>
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
+              {!loading && error && (
+                <div className="text-center py-12">
+                  <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <AlertTriangle className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Error loading FAQs</h3>
+                  <p className="text-slate-600 mb-6">{error}</p>
+                  <button 
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              )}
 
-            {!loading && !error && faqs.length > 0 && (
-              <Accordion type="single" collapsible className="w-full">
-                {faqs.map(faq => (
-                  <AccordionItem key={faq.id} value={`item-${faq.id}`}>
-                    <AccordionTrigger className="text-lg text-left hover:no-underline">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-base text-gray-700 leading-relaxed">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
+              {!loading && !error && filteredFaqs.length > 0 && (
+                <Accordion type="single" collapsible className="w-full space-y-4">
+                  {filteredFaqs.map(faq => (
+                    <AccordionItem 
+                      key={faq.id} 
+                      value={`item-${faq.id}`}
+                      className="border border-slate-200 rounded-xl px-6 data-[state=open]:bg-slate-50 data-[state=open]:border-blue-200 transition-all duration-200"
+                    >
+                      <AccordionTrigger className="text-lg font-medium text-slate-900 hover:text-blue-600 hover:no-underline py-6">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-base text-slate-600 leading-relaxed pb-6">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
 
-            {!loading && !error && faqs.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                <HelpCircle className="h-10 w-10 mx-auto mb-4" />
-                <p className="font-semibold">No Questions Yet</p>
-                <p className="text-sm">We're working on adding FAQs. Please check back later.</p>
-              </div>
-            )}
+              {!loading && !error && filteredFaqs.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No Results Found</h3>
+                  <p className="text-slate-600">
+                    We couldn't find any FAQs matching "{searchQuery}". Try a different search term.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Still Have Questions? */}
+          <div className="max-w-3xl mx-auto mt-16 text-center">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">Still have questions?</h2>
+            <p className="text-slate-600 mb-8">
+              Can't find the answer you're looking for? Please chat to our friendly team.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/contact" 
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Contact Support
+              </a>
+              <a 
+                href="mailto:support@zantechbd.com" 
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Email Us
+              </a>
+            </div>
           </div>
         </div>
       </main>

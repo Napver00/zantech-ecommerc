@@ -4,7 +4,18 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { config } from '@/config';
-import { Heart, Users, Target, Award, AlertTriangle, Building2, Sparkles } from 'lucide-react';
+import { 
+  Heart, 
+  Users, 
+  Target, 
+  Award, 
+  AlertTriangle, 
+  Building2, 
+  Sparkles, 
+  ArrowRight,
+  CheckCircle2,
+  Globe
+} from 'lucide-react';
 import Seo from '@/components/Seo';
 
 const About = () => {
@@ -22,11 +33,11 @@ const About = () => {
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           const html = json.data[0].text || '';
-          // sanitize the incoming HTML
           const sanitized = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
           if (mounted) setContent(sanitized);
         } else {
-          throw new Error('Unexpected API response');
+          // If no content found, we can just show the static parts
+          if (mounted) setContent(''); 
         }
       } catch (err) {
         console.error('Failed to load about:', err);
@@ -42,215 +53,175 @@ const About = () => {
     };
   }, []);
 
-  const renderSkeletons = () => {
-    return (
-      <div className="space-y-6">
-        {/* Title skeleton */}
-        <div className="space-y-3">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-
-        {/* Content skeletons */}
-        {Array.from({ length: 8 }).map((_, index) => (
-          <div key={index} className="space-y-3">
-            <Skeleton className="h-6 w-1/3" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </div>
+  const renderSkeletons = () => (
+    <div className="space-y-8 max-w-4xl mx-auto px-4">
+      <div className="space-y-4">
+        <Skeleton className="h-12 w-3/4 mx-auto" />
+        <Skeleton className="h-6 w-1/2 mx-auto" />
+      </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-64 w-full rounded-xl" />
         ))}
       </div>
-    );
-  };
-
-  const ErrorState = () => (
-    <div className="text-center py-16">
-      <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-        <AlertTriangle className="h-8 w-8 text-red-600" />
-      </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load About Content</h3>
-      <p className="text-gray-600 mb-6">{error}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-      >
-        Try Again
-      </button>
     </div>
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-orange-50">
-      {/*  SEO for About page */}
+    <div className="flex flex-col min-h-screen bg-slate-50">
       <Seo
-        title="About Zantech Store - Robotics & IoT in Bangladesh"
-        description="Learn about Zantech Store’s mission, values, and vision in robotics, IoT, electronics and STEM education in Bangladesh. Discover who we are and why makers trust us."
+        title="About Zantech - Innovating the Future"
+        description="Discover Zantech's mission to revolutionize technology and education in Bangladesh through robotics, IoT, and STEM solutions."
         url="https://store.zantechbd.com/about"
         type="website"
-        keywords="About Zantech, Zantech Store Bangladesh, robotics company BD, IoT company Bangladesh, STEM education Bangladesh"
       />
 
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-16">
+
+      <main className="flex-grow">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Building2 className="h-8 w-8 text-orange-600" />
+        <section className="relative py-20 md:py-32 overflow-hidden bg-slate-900 text-white">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-[50%] -left-[20%] w-[80%] h-[80%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+            <div className="absolute -bottom-[50%] -right-[20%] w-[80%] h-[80%] bg-purple-600/20 rounded-full blur-[120px]"></div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            About ZanTeche
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover our story, mission, and the passion that drives us to deliver exceptional experiences.
-          </p>
-        </div>
-
-        {/* Company Values */}
-        <div className="grid md:grid-cols-4 gap-6 mb-16 max-w-5xl mx-auto">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
-            <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Target className="h-6 w-6 text-blue-600" />
+          
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-8 animate-fade-in-up">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium text-slate-200">Innovating since 2020</span>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Our Mission</h3>
-            <p className="text-sm text-gray-600">Delivering innovative solutions that exceed expectations.</p>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-slate-300">
+              We Are ZAN Tech
+            </h1>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10">
+              Empowering the next generation through Robotics, IoT, and cutting-edge STEM education. We build the future, one circuit at a time.
+            </p>
           </div>
+        </section>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Heart className="h-6 w-6 text-green-600" />
+        {/* Stats Section */}
+        <section className="py-12 bg-white border-b border-slate-100">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { label: 'Years Experience', value: '5+', icon: Building2, color: 'text-blue-600' },
+                { label: 'Happy Clients', value: '1k+', icon: Users, color: 'text-green-600' },
+                { label: 'Projects Done', value: '500+', icon: Target, color: 'text-purple-600' },
+                { label: 'Awards Won', value: '12', icon: Award, color: 'text-yellow-600' },
+              ].map((stat, index) => (
+                <div key={index} className="text-center group hover:-translate-y-1 transition-transform duration-300">
+                  <div className={`w-12 h-12 mx-auto mb-4 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</div>
+                  <div className="text-sm text-slate-500 font-medium uppercase tracking-wider">{stat.label}</div>
+                </div>
+              ))}
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Our Values</h3>
-            <p className="text-sm text-gray-600">Integrity, quality, and customer satisfaction first.</p>
           </div>
+        </section>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
-            <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="h-6 w-6 text-purple-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Our Team</h3>
-            <p className="text-sm text-gray-600">Passionate professionals dedicated to excellence.</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
-            <div className="bg-yellow-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Award className="h-6 w-6 text-yellow-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Our Promise</h3>
-            <p className="text-sm text-gray-600">Continuous innovation and unwavering quality.</p>
-          </div>
-        </div>
-
-        {/* Company Logo Section */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-8 border border-orange-100 text-center">
-            <div className="bg-white rounded-xl p-8 inline-block shadow-sm">
-              <img
-                src="/zantechmanlogo.png"
-                alt="ZanTeche Logo"
-                className="h-20 md:h-24 mx-auto"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div className="hidden bg-orange-100 w-16 h-16 rounded-full items-center justify-center mx-auto">
-                <Sparkles className="h-8 w-8 text-orange-600" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-900 mt-6 mb-2">ZanTeche Commerce</h2>
-            <p className="text-gray-600">Your trusted partner in innovative solutions</p>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+        {/* Dynamic Content & Mission */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
             {loading ? (
-              <div>{renderSkeletons()}</div>
-            ) : error ? (
-              <ErrorState />
+              renderSkeletons()
             ) : (
-              <div
-                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-semibold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700"
-                dangerouslySetInnerHTML={{ __html: content }}
-              />
+              <div className="grid lg:grid-cols-2 gap-16 items-start">
+                {/* Left Column: Mission/Values Cards */}
+                <div className="space-y-8">
+                  <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                      <Target className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Our Mission</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      To democratize access to technology education and provide high-quality electronic components to makers, students, and engineers across Bangladesh.
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                      <Globe className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Our Vision</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      To be the leading catalyst for technological innovation in the region, fostering a community of creators who solve real-world problems.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column: Dynamic Content or Fallback */}
+                <div className="lg:pl-8">
+                  {content ? (
+                    <div 
+                      className="prose prose-lg prose-slate max-w-none
+                        prose-headings:font-bold prose-headings:text-slate-900
+                        prose-p:text-slate-600 prose-p:leading-relaxed
+                        prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-slate-900 prose-strong:font-bold
+                        prose-ul:list-disc prose-ul:pl-4
+                        prose-img:rounded-2xl prose-img:shadow-lg"
+                      dangerouslySetInnerHTML={{ __html: content }} 
+                    />
+                  ) : (
+                    <div className="space-y-6">
+                      <h2 className="text-3xl font-bold text-slate-900">Why Choose Us?</h2>
+                      <p className="text-slate-600 text-lg leading-relaxed">
+                        At ZanTech, we believe in quality, integrity, and innovation. We don't just sell products; we provide solutions. Our team of experts is dedicated to helping you succeed in your projects, whether you're a beginner or a professional.
+                      </p>
+                      <ul className="space-y-4 mt-8">
+                        {[
+                          "Authentic components guaranteed",
+                          "Expert technical support",
+                          "Fast and reliable delivery",
+                          "Comprehensive learning resources"
+                        ].map((item, i) => (
+                          <li key={i} className="flex items-center text-slate-700">
+                            <CheckCircle2 className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
+        </section>
 
-          {/* Call to Action Section */}
-          {!loading && !error && (
-            <div className="mt-12 grid md:grid-cols-2 gap-8">
-              {/* Contact Us */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-100">
-                <div className="text-center">
-                  <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Get in Touch</h3>
-                  <p className="text-gray-600 mb-6">
-                    Ready to work with us? We'd love to hear about your project and discuss how we can help.
-                  </p>
-                  <a
-                    href="/contact"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center"
-                  >
-                    Contact Us
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-
-              {/* Our Products */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 border border-green-100">
-                <div className="text-center">
-                  <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="h-6 w-6 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Explore Products</h3>
-                  <p className="text-gray-600 mb-6">
-                    Discover our range of innovative products and solutions designed to meet your needs.
-                  </p>
-                  <a
-                    href="/products"
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center"
-                  >
-                    View Products
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
+        {/* CTA Section */}
+        <section className="py-20 bg-slate-900 relative overflow-hidden">
+           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3"></div>
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Start Your Journey?</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto mb-10 text-lg">
+              Explore our wide range of products or get in touch with our team for custom solutions.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/shop" 
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-600/25"
+              >
+                Browse Shop
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </a>
+              <a 
+                href="/contact" 
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-sm border border-white/10 transition-all duration-300"
+              >
+                Contact Us
+              </a>
             </div>
-          )}
-
-          {/* Trust Indicators */}
-          {!loading && !error && (
-            <div className="mt-12">
-              <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Why Choose ZanTeche?</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">5+</div>
-                    <p className="text-sm text-gray-600">Years of Experience</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600 mb-2">1000+</div>
-                    <p className="text-sm text-gray-600">Happy Customers</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600 mb-2">24/7</div>
-                    <p className="text-sm text-gray-600">Customer Support</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        </section>
       </main>
+
       <Footer />
     </div>
   );

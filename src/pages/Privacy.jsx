@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { config } from "@/config";
-import { Shield, AlertTriangle, FileText, Clock } from "lucide-react";
+import { Shield, Lock, Eye, FileText, CheckCircle2 } from "lucide-react";
 import Seo from "@/components/Seo";
 
 const Privacy = () => {
@@ -27,7 +27,7 @@ const Privacy = () => {
           });
           if (mounted) setContent(sanitized);
         } else {
-          throw new Error("Unexpected API response");
+           if (mounted) setContent("");
         }
       } catch (err) {
         console.error("Failed to load privacy policy:", err);
@@ -43,158 +43,112 @@ const Privacy = () => {
     };
   }, []);
 
-  const renderSkeletons = () => {
-    return (
-      <div className="space-y-6">
-        {/* Title skeleton */}
-        <div className="space-y-3">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
+  const renderSkeletons = () => (
+    <div className="space-y-6 max-w-3xl mx-auto">
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="space-y-3 pt-4">
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-4/5" />
         </div>
-
-        {/* Content skeletons */}
-        {Array.from({ length: 8 }).map((_, index) => (
-          <div key={index} className="space-y-3">
-            <Skeleton className="h-6 w-1/3" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const ErrorState = () => (
-    <div className="text-center py-16">
-      <div className="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-        <AlertTriangle className="h-8 w-8 text-red-600" />
-      </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-        Unable to Load Privacy Policy
-      </h3>
-      <p className="text-gray-600 mb-6">{error}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-      >
-        Try Again
-      </button>
+      ))}
     </div>
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/*  SEO for Privacy page */}
+    <div className="flex flex-col min-h-screen bg-slate-50">
       <Seo
         title="Privacy Policy - Zantech Store"
-        description="Read the Zantech Store privacy policy to understand how we collect, use, and protect your personal data when you shop for robotics, IoT, and electronics products in Bangladesh."
+        description="Read the Zantech Store privacy policy to understand how we collect, use, and protect your personal data."
         url="https://store.zantechbd.com/privacy-policy"
         type="article"
-        keywords="Zantech Store privacy policy, data protection Bangladesh, customer data security, personal information policy, robotics store privacy, IoT store privacy"
       />
 
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-16">
+
+      <main className="flex-grow">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Shield className="h-8 w-8 text-blue-600" />
+        <div className="bg-slate-900 text-white py-16 relative overflow-hidden">
+           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[80%] bg-blue-600/10 rounded-full blur-[100px]"></div>
+            <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[80%] bg-indigo-600/10 rounded-full blur-[100px]"></div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Privacy Policy
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Your privacy matters to us. Learn how we collect, use, and protect
-            your personal information.
-          </p>
-        </div>
-
-        {/* Quick Info Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="bg-green-100 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
-              <Shield className="h-5 w-5 text-green-600" />
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm mb-6">
+              <Shield className="w-8 h-8 text-blue-400" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">
-              Data Protection
-            </h3>
-            <p className="text-sm text-gray-600">
-              We use industry-standard security measures to protect your data.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="bg-purple-100 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
-              <FileText className="h-5 w-5 text-purple-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Transparency</h3>
-            <p className="text-sm text-gray-600">
-              Clear information about what data we collect and why.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="bg-orange-100 w-10 h-10 rounded-lg flex items-center justify-center mb-4">
-              <Clock className="h-5 w-5 text-orange-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">
-              Regular Updates
-            </h3>
-            <p className="text-sm text-gray-600">
-              We keep our privacy policy current with latest practices.
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Privacy Policy</h1>
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+              We are committed to protecting your personal information and your right to privacy.
             </p>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+        <div className="container mx-auto px-4 py-12 -mt-8 relative z-20">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+             {[
+              { icon: Lock, title: "Secure Data", desc: "Your data is encrypted and stored securely." },
+              { icon: Eye, title: "Transparent", desc: "No hidden tracking or data selling." },
+              { icon: FileText, title: "Compliance", desc: "We follow all local data protection laws." }
+             ].map((item, i) => (
+               <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start space-x-4">
+                 <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                   <item.icon size={24} />
+                 </div>
+                 <div>
+                   <h3 className="font-semibold text-slate-900">{item.title}</h3>
+                   <p className="text-sm text-slate-500 mt-1">{item.desc}</p>
+                 </div>
+               </div>
+             ))}
+          </div>
+
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
             {loading ? (
-              <div>{renderSkeletons()}</div>
+              renderSkeletons()
             ) : error ? (
-              <ErrorState />
+               <div className="text-center py-12">
+                <p className="text-red-500 mb-4">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
             ) : (
-              <div
-                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-semibold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700"
-                dangerouslySetInnerHTML={{ __html: content }}
+              <div 
+                className="prose prose-slate max-w-none prose-lg
+                  prose-headings:font-bold prose-headings:text-slate-900
+                  prose-p:text-slate-600 prose-p:leading-relaxed
+                  prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-slate-900
+                  prose-ul:list-disc prose-ul:pl-4"
+                dangerouslySetInnerHTML={{ __html: content }} 
               />
             )}
-          </div>
-
-          {/* Footer Note */}
-          {!loading && !error && (
-            <div className="mt-8 text-center">
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
-                <h3 className="font-semibold text-blue-900 mb-2">
-                  Questions About Privacy?
-                </h3>
-                <p className="text-blue-700 text-sm mb-4">
-                  If you have any questions about this privacy policy or how we
-                  handle your data, please don't hesitate to contact us.
-                </p>
-                <a
-                  href="/contact"
-                  className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
-                >
-                  Contact Us
-                  <svg
-                    className="w-4 h-4 ml-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </a>
+            
+            {!loading && !error && !content && (
+              <div className="text-center py-12 text-slate-500">
+                <p>No privacy policy content available at the moment.</p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          
+          <div className="max-w-2xl mx-auto mt-12 text-center">
+            <p className="text-slate-500 text-sm">
+              Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+            <p className="text-slate-500 text-sm mt-2">
+              If you have any questions, please <a href="/contact" className="text-blue-600 hover:underline">contact us</a>.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />
