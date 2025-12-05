@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "sonner";
+import QuickSupport from "./components/QuickSupport";
 
 // Import Dashboard components
 import DashboardLayout from "./pages/Dashboard/DashboardLayout";
@@ -85,6 +86,7 @@ function App() {
         />
       </CartProvider>
     </AuthProvider>
+    <QuickSupport />
     </HelmetProvider>
     
   );

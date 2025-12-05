@@ -189,6 +189,9 @@ const ProductPage = () => {
             description: p.description || "",
             discountedPrice: p.discountedPrice ?? p.discounted_price ?? p.price,
             discountPercentage: p.discountPercentage ?? p.discount_percentage ?? null,
+            meta_title: p.meta_title || p.name,
+            meta_keywords: p.meta_keywords || "",
+            meta_description: p.meta_description || p.short_description || "",
           };
           if (mounted) setProduct(normalized);
         } else {
@@ -279,8 +282,9 @@ const ProductPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans">
       <Seo
-        title={`${product.name} | Zantech Store`}
-        description={product.short_description}
+        title={product.meta_title || `${product.name} | Zantech Store`}
+        description={product.meta_description || product.short_description}
+        keywords={product.meta_keywords}
         image={seoImage}
         url={productUrl}
         type="product"
@@ -428,7 +432,7 @@ const ProductPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-900">Easy Returns</p>
-                      <p className="text-xs text-slate-500">7 days return policy</p>
+                      <p className="text-xs text-slate-500">3 days return policy</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
