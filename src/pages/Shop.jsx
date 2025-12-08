@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
@@ -128,59 +128,60 @@ const Shop = () => {
 
   // Initial load
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // When location (query params) change, update filters accordingly and fetch
+  // Sync state with URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const categoryFromUrl = params.get('category_slug') || '';
-
-    // Build filters based on existing filters but override category_slug if present in URL
-    const initialFilters = {
-      ...filters,
-      category_slug: categoryFromUrl,
-      page: 1
+    const urlFilters = {
+      search: params.get('search') || '',
+      min_price: params.get('min_price') || '',
+      max_price: params.get('max_price') || '',
+      category_slug: params.get('category_slug') || '',
+      page: parseInt(params.get('page')) || 1,
+      limit: parseInt(params.get('limit')) || 12
     };
 
-    // Set filters state and fetch
-    setFilters(initialFilters);
-    fetchProducts(initialFilters);
+    setFilters(urlFilters);
+    fetchProducts(urlFilters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
+  const updateUrlParams = (newParams) => {
+    const params = new URLSearchParams(location.search);
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value === '' || value === null || value === undefined) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    // Always navigate to the new URL, this will trigger the useEffect
+    navigate({ search: params.toString() }, { replace: false });
+  };
+
   // Handle filter changes
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value, page: 1 };
-    setFilters(newFilters);
-    fetchProducts(newFilters);
+    // When filter changes, reset to page 1
+    updateUrlParams({ [key]: value, page: 1 });
   };
 
   // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
     const searchValue = e.target.search.value;
-    handleFilterChange('search', searchValue);
+    updateUrlParams({ search: searchValue, page: 1 });
   };
 
   // Clear filters
   const clearFilters = () => {
-    const clearedFilters = {
-      search: '',
-      min_price: '',
-      max_price: '',
-      category_slug: '',
-      page: 1,
-      limit: 12
-    };
-    setFilters(clearedFilters);
-    fetchProducts(clearedFilters);
+    navigate({ search: '' });
   };
 
   // Handle page change
   const handlePageChange = (page) => {
     if (page !== filters.page && page >= 1 && page <= pagination.last_page) {
-      const newFilters = { ...filters, page };
-      setFilters(newFilters);
-      fetchProducts(newFilters);
+      updateUrlParams({ page });
       // Scroll to top of products section
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

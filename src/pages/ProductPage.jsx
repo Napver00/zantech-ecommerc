@@ -240,8 +240,32 @@ const ProductPage = () => {
     }
   };
 
+  const seoImage = product?.image?.startsWith("http") 
+    ? product.image 
+    : product?.image 
+      ? `${siteUrl}${product.image}` 
+      : "";
+
+  const SeoComponent = (
+    <Seo
+      title={product?.meta_title || (product ? `${product.name} | Zantech Store` : undefined)}
+      description={product?.meta_description || product?.short_description}
+      keywords={product?.meta_keywords}
+      image={seoImage}
+      url={productUrl}
+      type="product"
+      product={product ? {
+        price: product.discountedPrice,
+        currency: "BDT",
+        availability: product.quantity > 0 ? "in stock" : "out of stock",
+        brand: product.brand || "Zantech",
+      } : undefined}
+    />
+  );
+
   if (loading) return (
     <div className="flex flex-col min-h-screen bg-slate-50">
+      {SeoComponent}
       <Header />
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -260,6 +284,7 @@ const ProductPage = () => {
 
   if (error || !product) return (
     <div className="flex flex-col min-h-screen bg-slate-50">
+      {SeoComponent}
       <Header />
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -277,24 +302,11 @@ const ProductPage = () => {
     </div>
   );
 
-  const seoImage = product.image?.startsWith("http") ? product.image : `${siteUrl}${product.image}`;
+
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans">
-      <Seo
-        title={product.meta_title || `${product.name} | Zantech Store`}
-        description={product.meta_description || product.short_description}
-        keywords={product.meta_keywords}
-        image={seoImage}
-        url={productUrl}
-        type="product"
-        product={{
-          price: product.discountedPrice,
-          currency: "BDT",
-          availability: product.quantity > 0 ? "in stock" : "out of stock",
-          brand: product.brand || "Zantech",
-        }}
-      />
+      {SeoComponent}
 
       <Header />
 
