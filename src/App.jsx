@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from "react-helmet-async";
 import HomePage from "./pages/HomePage";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
@@ -33,62 +33,61 @@ function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/tutorials" element={<Tutorials />} />
-            <Route path="/postdetails/:id" element={<PostDetails />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy-policy" element={<Privacy />} />
-            <Route path="/return-policy" element={<ReturnPolicy />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/product/:slug" element={<ProductPage />} />
-            <Route path="/checkout" element={<Checkout />} />
+        <CartProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/tutorials" element={<Tutorials />} />
+              <Route path="/postdetails/:slug" element={<PostDetails />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy-policy" element={<Privacy />} />
+              <Route path="/return-policy" element={<ReturnPolicy />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/product/:slug" element={<ProductPage />} />
+              <Route path="/checkout" element={<Checkout />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<DashboardHome />} />
-              <Route path="orders" element={<Orders />} />
-              <Route path="orders/:invoiceCode" element={<OrderDetails />} />
-              <Route path="downloads" element={<Downloads />} />
-              <Route path="addresses" element={<Addresses />} />
-              <Route path="account-details" element={<AccountDetails />} />
-              <Route path="wishlist" element={<Wishlist />} />
-            </Route>
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardHome />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="orders/:invoiceCode" element={<OrderDetails />} />
+                <Route path="downloads" element={<Downloads />} />
+                <Route path="addresses" element={<Addresses />} />
+                <Route path="account-details" element={<AccountDetails />} />
+                <Route path="wishlist" element={<Wishlist />} />
+              </Route>
 
-            <Route path="*" element={<HomePage />} />
-          </Routes>
-        </BrowserRouter>
-        <Toaster
-          position="top-right"
-          expand={true}
-          richColors
-          closeButton
-          duration={4000}
-          toastOptions={{
-            style: {
-              borderRadius: "12px",
-              padding: "16px",
-            },
-            className: "toast-notification",
-          }}
-        />
-      </CartProvider>
-    </AuthProvider>
-    <QuickSupport />
+              <Route path="*" element={<HomePage />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster
+            position="top-right"
+            expand={true}
+            richColors
+            closeButton
+            duration={4000}
+            toastOptions={{
+              style: {
+                borderRadius: "12px",
+                padding: "16px",
+              },
+              className: "toast-notification",
+            }}
+          />
+        </CartProvider>
+      </AuthProvider>
+      <QuickSupport />
     </HelmetProvider>
-    
   );
 }
 

@@ -1,47 +1,51 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, Tag, ArrowRight, Clock, User } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Calendar, Tag, ArrowRight, Clock, User } from "lucide-react";
 
 const PostCard = ({ post }) => {
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   // Determine category color scheme
   const getCategoryStyle = (category) => {
-    const lowerCategory = category?.toLowerCase() || '';
-    if (lowerCategory.includes('tutorial')) {
-      return 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-purple-500/30';
+    const lowerCategory = category?.toLowerCase() || "";
+    if (lowerCategory.includes("tutorial")) {
+      return "bg-gradient-to-r from-purple-600 to-pink-600 shadow-purple-500/30";
     }
-    if (lowerCategory.includes('blog')) {
-      return 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/30';
+    if (lowerCategory.includes("blog")) {
+      return "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/30";
     }
-    return 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/30';
+    return "bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/30";
   };
 
   return (
-    <Link 
-      to={`/postdetails/${post.id}`} 
+    <Link
+      to={`/postdetails/${post.slug}`}
       className="group flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 overflow-hidden h-full"
     >
       {/* Image Section */}
       <div className="relative overflow-hidden shrink-0">
         <div className="aspect-[16/10] overflow-hidden bg-slate-100">
-          <img 
-            src={post.thumbnail || '/placeholder-post.jpg'} 
-            alt={post.title} 
+          <img
+            src={post.thumbnail || "/placeholder-post.jpg"}
+            alt={post.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             loading="lazy"
           />
         </div>
-        
+
         {/* Category Badge */}
         {post.category && (
-          <div className={`absolute top-4 left-4 ${getCategoryStyle(post.category)} text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm border border-white/10`}>
+          <div
+            className={`absolute top-4 left-4 ${getCategoryStyle(
+              post.category
+            )} text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm border border-white/10`}
+          >
             {post.category}
           </div>
         )}
@@ -94,14 +98,18 @@ const PostCard = ({ post }) => {
               <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                 <User className="h-3.5 w-3.5" />
               </div>
-              <span className="text-xs font-medium text-slate-600">{post.author_name}</span>
+              <span className="text-xs font-medium text-slate-600">
+                {post.author_name}
+              </span>
             </div>
           ) : (
-             <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                 <User className="h-3.5 w-3.5" />
               </div>
-              <span className="text-xs font-medium text-slate-600">Zantech Team</span>
+              <span className="text-xs font-medium text-slate-600">
+                Zantech Team
+              </span>
             </div>
           )}
 

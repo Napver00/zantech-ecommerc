@@ -9,7 +9,7 @@ import DOMPurify from "dompurify";
 import Seo from "@/components/Seo";
 
 const PostDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,7 @@ const PostDetails = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${config.baseURL}/posts/${id}`);
+        const response = await fetch(`${config.baseURL}/posts/${slug}`);
         if (!response.ok) {
           throw new Error("Post not found.");
         }
@@ -37,7 +37,7 @@ const PostDetails = () => {
     };
 
     fetchPost();
-  }, [id]);
+  }, [slug]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -48,9 +48,9 @@ const PostDetails = () => {
   };
 
   const createMarkup = (htmlContent) => {
-    // Configure DOMPurify to allow iframes from YouTube and other video platforms
+    // Configure DOMPurify to allow html/css and iframes
     const sanitized = DOMPurify.sanitize(htmlContent, {
-      ADD_TAGS: ["iframe"],
+      ADD_TAGS: ["iframe", "style", "link", "meta"],
       ADD_ATTR: [
         "allow",
         "allowfullscreen",
@@ -59,6 +59,12 @@ const PostDetails = () => {
         "width",
         "height",
         "src",
+        "target",
+        "class",
+        "id",
+        "style",
+        "href",
+        "rel",
       ],
     });
     return { __html: sanitized };
@@ -164,7 +170,7 @@ const PostDetails = () => {
 
   // SEO helpers
   const siteUrl = "https://store.zantechbd.com";
-  const postUrl = `${siteUrl}/postdetails/${id}`;
+  const postUrl = `${siteUrl}/postdetails/${slug}`;
 
   // Plain text excerpt from HTML content (for meta description)
   const getDescriptionFromHtml = (html, maxLength = 160) => {
@@ -299,22 +305,7 @@ const PostDetails = () => {
 
             {/* Content Body - Kid Friendly Styling */}
             <div
-              className="prose prose-xl md:prose-2xl max-w-none
-                  font-medium text-gray-700
-                  prose-headings:font-black prose-headings:text-gray-900 prose-headings:tracking-tight
-                  prose-h2:text-4xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:text-blue-600
-                  prose-h3:text-3xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-indigo-600
-                  prose-p:leading-relaxed prose-p:mb-6
-                  prose-a:text-blue-500 prose-a:font-bold prose-a:no-underline hover:prose-a:text-blue-600 hover:prose-a:underline
-                  prose-strong:text-gray-900 prose-strong:font-black
-                  prose-ul:list-disc prose-ul:pl-8 prose-ul:marker:text-blue-400
-                  prose-ol:list-decimal prose-ol:pl-8 prose-ol:marker:text-blue-600 prose-ol:marker:font-bold
-                  prose-li:mb-3
-                  prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-10 prose-img:w-full prose-img:border-4 prose-img:border-gray-100
-                  prose-blockquote:border-l-8 prose-blockquote:border-yellow-400 prose-blockquote:bg-yellow-50 prose-blockquote:p-8 prose-blockquote:rounded-r-2xl prose-blockquote:text-gray-700 prose-blockquote:font-bold prose-blockquote:not-italic prose-blockquote:shadow-sm
-                  prose-code:bg-gray-800 prose-code:text-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded-lg prose-code:before:content-none prose-code:after:content-none
-                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-3xl prose-pre:shadow-xl
-                  [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-3xl [&_iframe]:shadow-2xl [&_iframe]:my-8 [&_iframe]:border-4 [&_iframe]:border-gray-100"
+              className="w-full max-w-none"
               dangerouslySetInnerHTML={createMarkup(post.content || "")}
             />
           </div>
